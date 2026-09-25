@@ -4,9 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Portal de Turnos y Castraciones - Zoonosis Mar del Plata</title>
+  <link rel="icon" type="image/png" href="mgp_icono.png">
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- QRCode generator library -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <script>
@@ -94,12 +93,12 @@
   <header class="bg-brand-navy text-white shadow-lg sticky top-0 z-40 border-b-4 border-brand-accent">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-wrap justify-between items-center gap-3">
       <div class="flex items-center space-x-3">
-        <div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-brand-navy shadow-inner font-black text-xl">
-          <i class="fa-solid fa-paw text-brand-blue"></i>
+        <div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-inner overflow-hidden p-1">
+          <img src="mgp_icono.png" alt="MGP Logo" class="w-full h-full object-contain">
         </div>
         <div>
           <div class="flex items-center gap-2">
-            <span class="text-xs font-bold tracking-widest uppercase bg-sky-500/20 text-sky-300 px-2 py-0.5 rounded">Municipio MGP</span>
+            <span class="text-xs font-bold tracking-widest uppercase bg-sky-500/20 text-sky-300 px-2 py-0.5 rounded">Direcci</span>
             <span class="text-xs text-slate-300 hidden sm:inline">• Zoonosis & Sanidad Animal</span>
           </div>
           <h1 class="text-lg sm:text-xl font-extrabold tracking-tight">Turnos y Castraciones Mar del Plata</h1>
@@ -156,8 +155,8 @@
                       <i class="fa-solid fa-calendar-check"></i>
                     </div>
                     <div>
-                      <span class="text-sm font-bold text-white group-hover:text-pink-300 block">QR Pedir Turno Castración</span>
-                      <span class="text-[11px] text-slate-300">Gira para escanear y ver los 8 pasos</span>
+                      <span class="text-sm font-bold text-white group-hover:text-pink-300 block">Solicitar Turno Castración</span>
+                      <span class="text-[11px] text-slate-300">Gira para ingresar y ver los 8 pasos</span>
                     </div>
                   </div>
                   <i class="fa-solid fa-rotate text-pink-400 group-hover:rotate-180 transition-transform duration-500 text-sm ml-2"></i>
@@ -170,7 +169,7 @@
                       <i class="fa-solid fa-location-dot"></i>
                     </div>
                     <div>
-                      <span class="text-sm font-bold text-white group-hover:text-sky-300 block">QR Sedes de Registro y Consulta</span>
+                      <span class="text-sm font-bold text-white group-hover:text-sky-300 block">Sedes de Registro y Consulta</span>
                       <span class="text-[11px] text-slate-300">Muestra Libertad y Colinas lado a lado</span>
                     </div>
                   </div>
@@ -184,43 +183,33 @@
 
         <!-- CARA TRASERA: Muestra los dos QR uno al lado del otro o el QR individual de Turno -->
         <div class="flip-card-back bg-gradient-to-br from-brand-navy via-slate-900 to-indigo-950 rounded-3xl text-white p-6 sm:p-8 shadow-2xl border-2 border-sky-500/40 relative flex flex-col items-center justify-start pt-16">
-          <!-- Botón superior para volver al menú -->
-          <button onclick="flipBack()" class="absolute top-4 right-4 text-slate-300 hover:text-white bg-white/10 hover:bg-white/20 px-3.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition border border-white/10 z-20">
-            <i class="fa-solid fa-arrow-rotate-left"></i> Volver al menú
-          </button>
 
           <!-- VISTA 1: DOS QR UNO AL LADO DEL OTRO (Registro y Sedes de Consulta) -->
           <div id="flip-view-registro" class="w-full max-w-3xl flex flex-col items-center">
             <div class="text-center mb-4">
-              <span class="text-xs font-bold uppercase tracking-wider text-sky-300 bg-sky-500/20 px-3 py-1 rounded-full border border-sky-400/30">
+              <span class="inline-block text-xs font-bold uppercase tracking-wider text-sky-300 bg-sky-500/20 px-3 py-1.5 rounded-xl border border-sky-400/30 max-w-[280px]">
                 Puntos de Registro MDQ Digital y Consulta
               </span>
-              <p class="text-xs text-slate-300 mt-1">Escaneá la sede que te quede más cercana con tu celular</p>
+              <p class="text-xs text-slate-300 mt-1">Hacé clic para ver cómo llegar a la sede más cercana</p>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 w-full">
-              <!-- QR Sede 1: Polideportivo Libertad -->
+              <!-- Sede 1: Polideportivo Libertad -->
               <div class="bg-white text-slate-900 p-4 rounded-2xl shadow-xl flex flex-col items-center text-center border-2 border-sky-100">
                 <span class="text-xs font-extrabold text-sky-800 uppercase tracking-wide">Polideportivo Libertad</span>
                 <span class="text-[11px] text-slate-500 font-medium mb-3">Ituzaingó 8350</span>
-                <div class="p-2 bg-slate-50 rounded-xl border border-slate-200 shadow-inner flex items-center justify-center">
-                  <div id="flip-qr-libertad"></div>
-                </div>
-                <span class="text-[11px] font-semibold text-slate-600 mt-2.5 flex items-center gap-1">
-                  <i class="fa-solid fa-map-location-dot text-sky-600"></i> Escanear Ubicación
-                </span>
+                <a href="https://maps.app.goo.gl/e1FLqfcTdYfVujRZA" target="_blank" onclick="window.open('https://maps.app.goo.gl/e1FLqfcTdYfVujRZA', '_blank'); return false;" class="relative z-50 cursor-pointer w-full px-4 py-3 bg-sky-600 hover:bg-sky-700 text-white rounded-xl text-sm font-bold shadow-md transition flex items-center justify-center gap-2">
+                  <i class="fa-solid fa-map-location-dot"></i> Ver Mapa y Cómo Llegar
+                </a>
               </div>
 
-              <!-- QR Sede 2: Polideportivo Colinas -->
-              <div class="bg-white text-slate-900 p-4 rounded-2xl shadow-xl flex flex-col items-center text-center border-2 border-emerald-100">
+              <!-- Sede 2: Polideportivo Colinas -->
+              <div class="bg-white text-slate-900 p-4 rounded-2xl shadow-xl flex flex-col items-center text-center border-2 border-emerald-100 relative z-40">
                 <span class="text-xs font-extrabold text-emerald-800 uppercase tracking-wide">Polideportivo Colinas</span>
                 <span class="text-[11px] text-slate-500 font-medium mb-3">Albert Einstein 1502</span>
-                <div class="p-2 bg-slate-50 rounded-xl border border-slate-200 shadow-inner flex items-center justify-center">
-                  <div id="flip-qr-colinas"></div>
-                </div>
-                <span class="text-[11px] font-semibold text-slate-600 mt-2.5 flex items-center gap-1">
-                  <i class="fa-solid fa-map-location-dot text-emerald-600"></i> Escanear Ubicación
-                </span>
+                <a href="https://maps.app.goo.gl/p8RSDkeRbakHVdvX9" target="_blank" onclick="window.open('https://maps.app.goo.gl/p8RSDkeRbakHVdvX9', '_blank'); return false;" class="relative z-50 cursor-pointer w-full px-4 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-sm font-bold shadow-md transition flex items-center justify-center gap-2">
+                  <i class="fa-solid fa-map-location-dot"></i> Ver Mapa y Cómo Llegar
+                </a>
               </div>
             </div>
           </div>
@@ -228,22 +217,25 @@
           <!-- VISTA 2: QR INDIVIDUAL DE TURNO (Portal de Castración) -->
           <div id="flip-view-turno" class="hidden flex flex-col items-center justify-center">
             <div class="text-center mb-4">
-              <span class="text-xs font-bold uppercase tracking-wider text-pink-300 bg-pink-500/20 px-3 py-1 rounded-full border border-pink-400/30">
+              <span class="inline-block text-xs font-bold uppercase tracking-wider text-pink-300 bg-pink-500/20 px-3 py-1.5 rounded-xl border border-pink-400/30 max-w-[280px]">
                 Portal de Turnos Zoonosis
               </span>
-              <p class="text-xs text-slate-300 mt-1">Sede Canesa y Guanahani • autenticar.mardelplata.gob.ar</p>
+              <p class="text-xs text-slate-300 mt-1">Sede Canesa y Guanahani</p>
             </div>
             
-            <div class="bg-white p-5 rounded-3xl shadow-2xl flex flex-col items-center justify-center">
-              <div id="flip-qr-turno" class="p-1 bg-white rounded-2xl flex items-center justify-center"></div>
-            </div>
+            <a href="https://autenticar.mardelplata.gob.ar/" target="_blank" onclick="window.open('https://autenticar.mardelplata.gob.ar/', '_blank'); return false;" class="relative z-50 cursor-pointer mt-2 mb-2 px-8 py-4 bg-brand-accent hover:bg-pink-600 text-white rounded-2xl text-lg font-black shadow-xl transition flex flex-col items-center justify-center gap-1 w-full max-w-sm border-2 border-white/20">
+              <span class="flex items-center gap-2">
+                <i class="fa-solid fa-calendar-check"></i> Ingresar al Portal
+              </span>
+              <span class="text-[11px] text-pink-100 font-medium">autenticar.mardelplata.gob.ar</span>
+            </a>
+          </div>
 
-            <p class="text-xs text-slate-300 mt-4 flex items-center gap-1.5 font-medium tracking-wide">
-              <i class="fa-solid fa-camera text-pink-400"></i> Escaneá para pedir tu turno
-            </p>
-            <span class="text-[11px] text-pink-300 mt-1 font-semibold flex items-center gap-1">
-              <i class="fa-solid fa-arrow-down"></i> Consultá el paso a paso detallado aquí abajo
-            </span>
+          <!-- Botón inferior para volver al menú, visible en ambas vistas -->
+          <div class="w-full flex justify-center mt-8">
+            <button onclick="flipBack()" class="text-slate-300 hover:text-white bg-white/10 hover:bg-white/20 px-5 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2 transition border border-white/10 cursor-pointer shadow-lg">
+              <i class="fa-solid fa-arrow-rotate-left"></i> Volver al menú principal
+            </button>
           </div>
 
         </div>
@@ -761,12 +753,11 @@
                 </div>
               </div>
 
-              <div class="bg-white p-3 rounded-xl border border-slate-200 text-[11px] text-slate-600 flex items-center justify-between gap-3">
+              <div class="bg-white p-3 rounded-xl border border-slate-200 text-[11px] text-slate-600 flex items-center justify-center gap-3 text-center">
                 <div>
                   <i class="fa-solid fa-clock text-amber-500 mr-1"></i>
                   Presentarse 15 minutos antes con DNI y manta limpia.
                 </div>
-                <div id="voucher-qr" class="shrink-0 p-1 bg-white border border-slate-200 rounded"></div>
               </div>
             </div>
 
@@ -816,17 +807,12 @@
             </p>
 
             <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 flex flex-col items-center text-center mb-4">
-              <div id="qr-sede-canesa" class="bg-white p-2 rounded-lg border border-slate-200 shadow-inner"></div>
-              <span class="text-[11px] font-bold text-slate-700 mt-2">QR Ubicación Canesa y Guanahani</span>
-              <span class="text-[10px] text-slate-500">Escaneá para navegar</span>
+              <span class="text-[11px] font-bold text-slate-700 mt-2">Ubicación Canesa y Guanahani</span>
             </div>
           </div>
 
           <div class="space-y-2 pt-3 border-t border-slate-100">
-            <button onclick="openQrModal('Sede Zoonosis Canesa y Guanahani', 'https://maps.google.com/?q=Canesa+y+Guanahani+Mar+del+Plata', 'Canesa y Guanahani, Mar del Plata')" class="w-full text-xs font-semibold py-2 px-3 bg-pink-50 text-pink-700 hover:bg-pink-100 rounded-xl transition flex items-center justify-center gap-1.5 border border-pink-200">
-              <i class="fa-solid fa-expand"></i> Ampliar QR
-            </button>
-            <a href="https://maps.google.com/?q=Canesa+y+Guanahani+Mar+del+Plata" target="_blank" rel="noopener noreferrer" class="w-full text-xs font-semibold py-2 px-3 bg-slate-900 text-white hover:bg-slate-800 rounded-xl transition flex items-center justify-center gap-1.5">
+            <a href="https://maps.google.com/?q=Canesa+y+Guanahani+Mar+del+Plata" target="_blank" rel="noopener noreferrer" onclick="window.open('https://maps.google.com/?q=Canesa+y+Guanahani+Mar+del+Plata', '_blank'); return false;" class="w-full text-xs font-semibold py-2 px-3 bg-slate-900 text-white hover:bg-slate-800 rounded-xl transition flex items-center justify-center gap-1.5">
               <i class="fa-solid fa-diamond-turn-right"></i> Abrir en Google Maps
             </a>
           </div>
@@ -849,17 +835,12 @@
             </p>
 
             <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 flex flex-col items-center text-center mb-4">
-              <div id="qr-sede-libertad" class="bg-white p-2 rounded-lg border border-slate-200 shadow-inner"></div>
-              <span class="text-[11px] font-bold text-slate-700 mt-2">QR Polideportivo Libertad</span>
-              <span class="text-[10px] text-slate-500">Ituzaingó 8350</span>
+              <span class="text-[11px] font-bold text-slate-700 mt-2">Ubicación Polideportivo Libertad</span>
             </div>
           </div>
 
           <div class="space-y-2 pt-3 border-t border-slate-100">
-            <button onclick="openQrModal('Polideportivo Libertad', 'https://maps.app.goo.gl/e1FLqfcTdYfVujRZA', 'Ituzaingó 8350, B7606EGT Mar del Plata')" class="w-full text-xs font-semibold py-2 px-3 bg-sky-50 text-sky-700 hover:bg-sky-100 rounded-xl transition flex items-center justify-center gap-1.5 border border-sky-200">
-              <i class="fa-solid fa-expand"></i> Ampliar QR
-            </button>
-            <a href="https://maps.app.goo.gl/e1FLqfcTdYfVujRZA" target="_blank" rel="noopener noreferrer" class="w-full text-xs font-semibold py-2 px-3 bg-slate-900 text-white hover:bg-slate-800 rounded-xl transition flex items-center justify-center gap-1.5">
+            <a href="https://maps.app.goo.gl/e1FLqfcTdYfVujRZA" target="_blank" rel="noopener noreferrer" onclick="window.open('https://maps.app.goo.gl/e1FLqfcTdYfVujRZA', '_blank'); return false;" class="w-full text-xs font-semibold py-2 px-3 bg-slate-900 text-white hover:bg-slate-800 rounded-xl transition flex items-center justify-center gap-1.5">
               <i class="fa-solid fa-diamond-turn-right"></i> Abrir en Google Maps
             </a>
           </div>
@@ -882,17 +863,12 @@
             </p>
 
             <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 flex flex-col items-center text-center mb-4">
-              <div id="qr-sede-colinas" class="bg-white p-2 rounded-lg border border-slate-200 shadow-inner"></div>
-              <span class="text-[11px] font-bold text-slate-700 mt-2">QR Colinas de Peralta Ramos</span>
-              <span class="text-[10px] text-slate-500">Albert Einstein 1502</span>
+              <span class="text-[11px] font-bold text-slate-700 mt-2">Ubicación Colinas de Peralta Ramos</span>
             </div>
           </div>
 
           <div class="space-y-2 pt-3 border-t border-slate-100">
-            <button onclick="openQrModal('Polideportivo Colinas de Peralta Ramos', 'https://maps.app.goo.gl/p8RSDkeRbakHVdvX9', 'Albert Einstein 1502, B7603CBL Mar del Plata')" class="w-full text-xs font-semibold py-2 px-3 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 rounded-xl transition flex items-center justify-center gap-1.5 border border-emerald-200">
-              <i class="fa-solid fa-expand"></i> Ampliar QR
-            </button>
-            <a href="https://maps.app.goo.gl/p8RSDkeRbakHVdvX9" target="_blank" rel="noopener noreferrer" class="w-full text-xs font-semibold py-2 px-3 bg-slate-900 text-white hover:bg-slate-800 rounded-xl transition flex items-center justify-center gap-1.5">
+            <a href="https://maps.app.goo.gl/p8RSDkeRbakHVdvX9" target="_blank" rel="noopener noreferrer" onclick="window.open('https://maps.app.goo.gl/p8RSDkeRbakHVdvX9', '_blank'); return false;" class="w-full text-xs font-semibold py-2 px-3 bg-slate-900 text-white hover:bg-slate-800 rounded-xl transition flex items-center justify-center gap-1.5">
               <i class="fa-solid fa-diamond-turn-right"></i> Abrir en Google Maps
             </a>
           </div>
@@ -1404,77 +1380,7 @@
       colinas: 'https://maps.app.goo.gl/p8RSDkeRbakHVdvX9'
     };
 
-    // Initialize QRs when DOM is loaded
-    window.addEventListener('DOMContentLoaded', () => {
-      // Initialize side-by-side QRs on card back
-      flipQrLibertad = new QRCode(document.getElementById("flip-qr-libertad"), {
-        text: QR_URLS.libertad,
-        width: 140,
-        height: 140,
-        colorDark: "#0284C7",
-        colorLight: "#ffffff",
-        correctLevel: QRCode.CorrectLevel.M
-      });
-
-      flipQrColinas = new QRCode(document.getElementById("flip-qr-colinas"), {
-        text: QR_URLS.colinas,
-        width: 140,
-        height: 140,
-        colorDark: "#0D9488",
-        colorLight: "#ffffff",
-        correctLevel: QRCode.CorrectLevel.M
-      });
-
-      // Initialize single Turno QR on card back
-      flipQrTurno = new QRCode(document.getElementById("flip-qr-turno"), {
-        text: QR_URLS.turno,
-        width: 180,
-        height: 180,
-        colorDark: "#1A365D",
-        colorLight: "#ffffff",
-        correctLevel: QRCode.CorrectLevel.M
-      });
-
-      // Sede Canesa QR
-      new QRCode(document.getElementById("qr-sede-canesa"), {
-        text: QR_URLS.canesa,
-        width: 115,
-        height: 115,
-        colorDark: "#0f172a",
-        colorLight: "#ffffff",
-        correctLevel: QRCode.CorrectLevel.M
-      });
-
-      // Polideportivo Libertad QR
-      new QRCode(document.getElementById("qr-sede-libertad"), {
-        text: QR_URLS.libertad,
-        width: 115,
-        height: 115,
-        colorDark: "#0f172a",
-        colorLight: "#ffffff",
-        correctLevel: QRCode.CorrectLevel.M
-      });
-
-      // Polideportivo Colinas QR
-      new QRCode(document.getElementById("qr-sede-colinas"), {
-        text: QR_URLS.colinas,
-        width: 115,
-        height: 115,
-        colorDark: "#0f172a",
-        colorLight: "#ffffff",
-        correctLevel: QRCode.CorrectLevel.M
-      });
-
-      // Voucher ticket mini QR
-      new QRCode(document.getElementById("voucher-qr"), {
-        text: "MDQ-ZN-TURNO-CONFIRMADO-CANESA",
-        width: 60,
-        height: 60,
-        colorDark: "#1A365D",
-        colorLight: "#ffffff",
-        correctLevel: QRCode.CorrectLevel.L
-      });
-    });
+    // Scripts for flip cards and navigation
 
     // Flip to QR face and configure for selected option
     function flipToQr(type) {
