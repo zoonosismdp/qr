@@ -98,8 +98,7 @@
         </div>
         <div>
           <div class="flex items-center gap-2">
-            <span class="text-xs font-bold tracking-widest uppercase bg-sky-500/20 text-sky-300 px-2 py-0.5 rounded">Direcci</span>
-            <span class="text-xs text-slate-300 hidden sm:inline">• Zoonosis & Sanidad Animal</span>
+            <span class="text-[10px] sm:text-xs font-bold tracking-widest uppercase bg-sky-500/20 text-sky-300 px-2 py-0.5 rounded">Dirección de Zoonosis y Bienestar Animal</span>
           </div>
           <h1 class="text-lg sm:text-xl font-extrabold tracking-tight">Turnos y Castraciones Mar del Plata</h1>
         </div>
@@ -132,7 +131,7 @@
 
             <!-- Título principal -->
             <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight mb-2">
-              Escaneá con tu celular y sacá tu turno
+              Gestión de Turnos y Consultas
             </h2>
 
             <!-- Bajada de texto -->
@@ -144,38 +143,55 @@
             <!-- Selector para dar vuelta la tarjeta según el trámite -->
             <div class="pt-5 border-t border-white/10">
               <span class="text-xs uppercase font-bold tracking-wider text-pink-300 block mb-3">
-                ¿Qué QR necesitás escanear en pantalla?
+                ¿Qué trámite necesitás realizar?
               </span>
 
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <!-- Opción 1: Pedir Turno -->
-                <button onclick="flipToQr('turno')" class="group text-left bg-white/5 hover:bg-white/10 border border-pink-400/40 hover:border-pink-400 p-4 rounded-xl transition flex items-center justify-between">
-                  <div class="flex items-center gap-3">
-                    <div class="w-9 h-9 rounded-lg bg-[#E11D48]/30 text-pink-300 flex items-center justify-center text-base">
+                <button onclick="flipToQr('turno')" class="group text-left bg-white/5 hover:bg-white/10 border border-pink-400/40 hover:border-pink-400 p-5 rounded-2xl transition flex items-center justify-between shadow-sm">
+                  <div class="flex items-center gap-4">
+                    <div class="w-11 h-11 rounded-xl bg-[#E11D48]/30 text-pink-300 flex items-center justify-center text-lg">
                       <i class="fa-solid fa-calendar-check"></i>
                     </div>
                     <div>
-                      <span class="text-sm font-bold text-white group-hover:text-pink-300 block">Solicitar Turno Castración</span>
-                      <span class="text-[11px] text-slate-300">Gira para ingresar y ver los 8 pasos</span>
+                      <span class="text-[15px] font-bold text-white group-hover:text-pink-300 block mb-0.5">Solicitar Turno Castración</span>
+                      <span class="text-xs text-slate-300">Gira para ingresar al portal</span>
                     </div>
                   </div>
-                  <i class="fa-solid fa-rotate text-pink-400 group-hover:rotate-180 transition-transform duration-500 text-sm ml-2"></i>
+                  <i class="fa-solid fa-rotate text-pink-400 group-hover:rotate-180 transition-transform duration-500 text-base ml-2"></i>
                 </button>
 
                 <!-- Opción 2: Registrarse (2 Ubicaciones lado a lado) -->
-                <button onclick="flipToQr('registro')" class="group text-left bg-white/5 hover:bg-white/10 border border-sky-400/40 hover:border-sky-300 p-4 rounded-xl transition flex items-center justify-between">
-                  <div class="flex items-center gap-3">
-                    <div class="w-9 h-9 rounded-lg bg-sky-500/30 text-sky-300 flex items-center justify-center text-base">
+                <button onclick="flipToQr('registro')" class="group text-left bg-white/5 hover:bg-white/10 border border-sky-400/40 hover:border-sky-300 p-5 rounded-2xl transition flex items-center justify-between shadow-sm">
+                  <div class="flex items-center gap-4">
+                    <div class="w-11 h-11 rounded-xl bg-sky-500/30 text-sky-300 flex items-center justify-center text-lg">
                       <i class="fa-solid fa-location-dot"></i>
                     </div>
                     <div>
-                      <span class="text-sm font-bold text-white group-hover:text-sky-300 block">Sedes de Registro y Consulta</span>
-                      <span class="text-[11px] text-slate-300">Muestra Libertad y Colinas lado a lado</span>
+                      <span class="text-[15px] font-bold text-white group-hover:text-sky-300 block mb-0.5">Sedes de Registro y Consulta</span>
+                      <span class="text-xs text-slate-300">Muestra Libertad y Colinas</span>
                     </div>
                   </div>
-                  <i class="fa-solid fa-rotate text-sky-400 group-hover:rotate-180 transition-transform duration-500 text-sm ml-2"></i>
+                  <i class="fa-solid fa-rotate text-sky-400 group-hover:rotate-180 transition-transform duration-500 text-base ml-2"></i>
                 </button>
               </div>
+
+              <!-- Opción 3: Chatbot WhatsApp -->
+              <div class="mt-4">
+                <a href="https://wa.me/5492235280718?text=hola" target="_blank" onclick="window.open('https://wa.me/5492235280718?text=hola', '_blank'); return false;" class="group w-full text-left bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-400/40 hover:border-emerald-400 p-4 rounded-2xl transition flex items-center justify-between shadow-sm cursor-pointer">
+                  <div class="flex items-center gap-4">
+                    <div class="w-11 h-11 rounded-xl bg-emerald-500 text-white flex items-center justify-center text-xl shadow-md">
+                      <i class="fa-brands fa-whatsapp"></i>
+                    </div>
+                    <div>
+                      <span class="text-[15px] font-bold text-emerald-100 group-hover:text-white block mb-0.5">Otras Gestiones Chatbot</span>
+                      <span class="text-xs text-emerald-200/70">Hablá con nuestro asistente virtual</span>
+                    </div>
+                  </div>
+                  <i class="fa-solid fa-arrow-up-right-from-square text-emerald-400 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-transform duration-300 text-base ml-2"></i>
+                </a>
+              </div>
+
             </div>
 
           </div>
@@ -216,12 +232,7 @@
 
           <!-- VISTA 2: QR INDIVIDUAL DE TURNO (Portal de Castración) -->
           <div id="flip-view-turno" class="hidden flex flex-col items-center justify-center">
-            <div class="text-center mb-4">
-              <span class="inline-block text-xs font-bold uppercase tracking-wider text-pink-300 bg-pink-500/20 px-3 py-1.5 rounded-xl border border-pink-400/30 max-w-[280px]">
-                Portal de Turnos Zoonosis
-              </span>
-              <p class="text-xs text-slate-300 mt-1">Sede Canesa y Guanahani</p>
-            </div>
+
             
             <a href="https://autenticar.mardelplata.gob.ar/" target="_blank" onclick="window.open('https://autenticar.mardelplata.gob.ar/', '_blank'); return false;" class="cursor-pointer mt-2 mb-2 px-8 py-4 bg-brand-accent hover:bg-pink-600 text-white rounded-2xl text-lg font-black shadow-xl transition flex flex-col items-center justify-center gap-1 w-full max-w-sm border-2 border-white/20">
               <span class="flex items-center gap-2">
