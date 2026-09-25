@@ -1,0 +1,1666 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal de Turnos y Castraciones - Zoonosis Mar del Plata</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- QRCode generator library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              navy: '#1A365D',
+              blue: '#0284C7',
+              pink: '#E11D48',
+              accent: '#F43F5E',
+              teal: '#0D9488',
+              light: '#F8FAFC'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background-color: #cbd5e1;
+      border-radius: 9999px;
+    }
+    .badge-step {
+      box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.15);
+    }
+    .fade-in {
+      animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .perspective-container {
+      perspective: 1400px;
+    }
+    .flip-card-inner {
+      display: grid;
+      width: 100%;
+      transition: transform 0.65s cubic-bezier(0.4, 0, 0.2, 1);
+      transform-style: preserve-3d;
+    }
+    .flip-card-inner.is-flipped {
+      transform: rotateY(180deg);
+    }
+    .flip-card-front, .flip-card-back {
+      grid-area: 1 / 1;
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+    }
+    .flip-card-back {
+      transform: rotateY(180deg);
+    }
+    @keyframes stepPop {
+      0% { transform: scale(0.97); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .step-animated {
+      animation: stepPop 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .pulse-glow {
+      box-shadow: 0 0 0 0 rgba(2, 132, 199, 0.5);
+      animation: pulseGlow 1.8s infinite;
+    }
+    @keyframes pulseGlow {
+      0% { box-shadow: 0 0 0 0 rgba(2, 132, 199, 0.5); }
+      70% { box-shadow: 0 0 0 10px rgba(2, 132, 199, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(2, 132, 199, 0); }
+    }
+  </style>
+</head>
+<body class="bg-white text-slate-800 min-h-screen flex flex-col antialiased max-w-md mx-auto shadow-2xl relative overflow-x-hidden border-x border-slate-200">
+
+  <header class="bg-brand-navy text-white shadow-lg sticky top-0 z-40 border-b-4 border-brand-accent">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-wrap justify-between items-center gap-3">
+      <div class="flex items-center space-x-3">
+        <div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-brand-navy shadow-inner font-black text-xl">
+          <i class="fa-solid fa-paw text-brand-blue"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold tracking-widest uppercase bg-sky-500/20 text-sky-300 px-2 py-0.5 rounded">Municipio MGP</span>
+            <span class="text-xs text-slate-300 hidden sm:inline">• Zoonosis & Sanidad Animal</span>
+          </div>
+          <h1 class="text-lg sm:text-xl font-extrabold tracking-tight">Turnos y Castraciones Mar del Plata</h1>
+        </div>
+      </div>
+      
+    </div>
+  </header>
+
+  <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+
+    <!-- Notification Toast / Notice Banner -->
+    <div id="toast-banner" class="hidden mb-6 bg-emerald-50 border border-emerald-300 text-emerald-900 px-4 py-3 rounded-xl flex items-center justify-between shadow-sm fade-in">
+      <div class="flex items-center gap-3">
+        <i class="fa-solid fa-circle-check text-emerald-600 text-lg"></i>
+        <span id="toast-message" class="text-sm font-medium">Acción completada con éxito.</span>
+      </div>
+      <button onclick="hideToast()" class="text-emerald-700 hover:text-emerald-950 text-sm">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <!-- Interactive Totem: Menu Selector with 3D Flip Card to reveal QR -->
+    <div class="perspective-container mb-8">
+      <div id="interactive-flip-card" class="flip-card-inner">
+        
+        <!-- CARA FRONTAL: Diseño idéntico a la imagen con integración de selección de QR -->
+        <div class="flip-card-front bg-[#1B2559] rounded-2xl text-white p-6 sm:p-8 shadow-xl relative overflow-hidden">
+          
+          <div class="relative z-10 max-w-4xl">
+
+            <!-- Título principal -->
+            <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight mb-2">
+              Escaneá con tu celular y sacá tu turno
+            </h2>
+
+            <!-- Bajada de texto -->
+            <p class="text-slate-200 text-sm sm:text-base leading-relaxed mb-6">
+              El sistema de turnos de Zoonosis de la Municipalidad de General Pueyrredon se gestiona a través de la plataforma unificada <strong class="text-white font-bold">MDQ Digital</strong>.
+            </p>
+
+
+            <!-- Selector para dar vuelta la tarjeta según el trámite -->
+            <div class="pt-5 border-t border-white/10">
+              <span class="text-xs uppercase font-bold tracking-wider text-pink-300 block mb-3">
+                ¿Qué QR necesitás escanear en pantalla?
+              </span>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <!-- Opción 1: Pedir Turno -->
+                <button onclick="flipToQr('turno')" class="group text-left bg-white/5 hover:bg-white/10 border border-pink-400/40 hover:border-pink-400 p-4 rounded-xl transition flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-lg bg-[#E11D48]/30 text-pink-300 flex items-center justify-center text-base">
+                      <i class="fa-solid fa-calendar-check"></i>
+                    </div>
+                    <div>
+                      <span class="text-sm font-bold text-white group-hover:text-pink-300 block">QR Pedir Turno Castración</span>
+                      <span class="text-[11px] text-slate-300">Gira para escanear y ver los 8 pasos</span>
+                    </div>
+                  </div>
+                  <i class="fa-solid fa-rotate text-pink-400 group-hover:rotate-180 transition-transform duration-500 text-sm ml-2"></i>
+                </button>
+
+                <!-- Opción 2: Registrarse (2 Ubicaciones lado a lado) -->
+                <button onclick="flipToQr('registro')" class="group text-left bg-white/5 hover:bg-white/10 border border-sky-400/40 hover:border-sky-300 p-4 rounded-xl transition flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-lg bg-sky-500/30 text-sky-300 flex items-center justify-center text-base">
+                      <i class="fa-solid fa-location-dot"></i>
+                    </div>
+                    <div>
+                      <span class="text-sm font-bold text-white group-hover:text-sky-300 block">QR Sedes de Registro y Consulta</span>
+                      <span class="text-[11px] text-slate-300">Muestra Libertad y Colinas lado a lado</span>
+                    </div>
+                  </div>
+                  <i class="fa-solid fa-rotate text-sky-400 group-hover:rotate-180 transition-transform duration-500 text-sm ml-2"></i>
+                </button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- CARA TRASERA: Muestra los dos QR uno al lado del otro o el QR individual de Turno -->
+        <div class="flip-card-back bg-gradient-to-br from-brand-navy via-slate-900 to-indigo-950 rounded-3xl text-white p-6 sm:p-8 shadow-2xl border-2 border-sky-500/40 relative flex flex-col items-center justify-start pt-16">
+          <!-- Botón superior para volver al menú -->
+          <button onclick="flipBack()" class="absolute top-4 right-4 text-slate-300 hover:text-white bg-white/10 hover:bg-white/20 px-3.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition border border-white/10 z-20">
+            <i class="fa-solid fa-arrow-rotate-left"></i> Volver al menú
+          </button>
+
+          <!-- VISTA 1: DOS QR UNO AL LADO DEL OTRO (Registro y Sedes de Consulta) -->
+          <div id="flip-view-registro" class="w-full max-w-3xl flex flex-col items-center">
+            <div class="text-center mb-4">
+              <span class="text-xs font-bold uppercase tracking-wider text-sky-300 bg-sky-500/20 px-3 py-1 rounded-full border border-sky-400/30">
+                Puntos de Registro MDQ Digital y Consulta
+              </span>
+              <p class="text-xs text-slate-300 mt-1">Escaneá la sede que te quede más cercana con tu celular</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-5 w-full">
+              <!-- QR Sede 1: Polideportivo Libertad -->
+              <div class="bg-white text-slate-900 p-4 rounded-2xl shadow-xl flex flex-col items-center text-center border-2 border-sky-100">
+                <span class="text-xs font-extrabold text-sky-800 uppercase tracking-wide">Polideportivo Libertad</span>
+                <span class="text-[11px] text-slate-500 font-medium mb-3">Ituzaingó 8350</span>
+                <div class="p-2 bg-slate-50 rounded-xl border border-slate-200 shadow-inner flex items-center justify-center">
+                  <div id="flip-qr-libertad"></div>
+                </div>
+                <span class="text-[11px] font-semibold text-slate-600 mt-2.5 flex items-center gap-1">
+                  <i class="fa-solid fa-map-location-dot text-sky-600"></i> Escanear Ubicación
+                </span>
+              </div>
+
+              <!-- QR Sede 2: Polideportivo Colinas -->
+              <div class="bg-white text-slate-900 p-4 rounded-2xl shadow-xl flex flex-col items-center text-center border-2 border-emerald-100">
+                <span class="text-xs font-extrabold text-emerald-800 uppercase tracking-wide">Polideportivo Colinas</span>
+                <span class="text-[11px] text-slate-500 font-medium mb-3">Albert Einstein 1502</span>
+                <div class="p-2 bg-slate-50 rounded-xl border border-slate-200 shadow-inner flex items-center justify-center">
+                  <div id="flip-qr-colinas"></div>
+                </div>
+                <span class="text-[11px] font-semibold text-slate-600 mt-2.5 flex items-center gap-1">
+                  <i class="fa-solid fa-map-location-dot text-emerald-600"></i> Escanear Ubicación
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- VISTA 2: QR INDIVIDUAL DE TURNO (Portal de Castración) -->
+          <div id="flip-view-turno" class="hidden flex flex-col items-center justify-center">
+            <div class="text-center mb-4">
+              <span class="text-xs font-bold uppercase tracking-wider text-pink-300 bg-pink-500/20 px-3 py-1 rounded-full border border-pink-400/30">
+                Portal de Turnos Zoonosis
+              </span>
+              <p class="text-xs text-slate-300 mt-1">Sede Canesa y Guanahani • autenticar.mardelplata.gob.ar</p>
+            </div>
+            
+            <div class="bg-white p-5 rounded-3xl shadow-2xl flex flex-col items-center justify-center">
+              <div id="flip-qr-turno" class="p-1 bg-white rounded-2xl flex items-center justify-center"></div>
+            </div>
+
+            <p class="text-xs text-slate-300 mt-4 flex items-center gap-1.5 font-medium tracking-wide">
+              <i class="fa-solid fa-camera text-pink-400"></i> Escaneá para pedir tu turno
+            </p>
+            <span class="text-[11px] text-pink-300 mt-1 font-semibold flex items-center gap-1">
+              <i class="fa-solid fa-arrow-down"></i> Consultá el paso a paso detallado aquí abajo
+            </span>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Guía Paso a Paso: Oculta por defecto, solo visible al dar vuelta en 'Pedir Turno' -->
+    <div id="view-guia" class="hidden fade-in space-y-6">
+      
+      <!-- Encabezado simplificado -->
+      <div class="border-b border-slate-200 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+        <div>
+          <div class="flex items-center gap-2 mb-1">
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-bold bg-sky-100 text-sky-800">
+              <i class="fa-solid fa-list-check text-xs"></i> Punteo Rápido
+            </span>
+            <span class="text-xs text-slate-500 font-medium">• 8 Pasos Oficiales</span>
+          </div>
+          <h3 class="text-xl sm:text-2xl font-black text-slate-900">
+            ¿Cómo sacar el turno para castración?
+          </h3>
+          <p class="text-xs sm:text-sm text-slate-600 mt-0.5">Seguí este punteo sencillo con las indicaciones para completar el formulario en el portal.</p>
+        </div>
+      </div>
+
+      <!-- Punteo Simplificado y Limpio (1 a 8) -->
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm divide-y divide-slate-100 overflow-hidden">
+        
+        <!-- Paso 1 -->
+        <div class="p-4 sm:p-5 flex items-start gap-4 hover:bg-slate-50/70 transition">
+          <div class="w-8 h-8 rounded-xl bg-brand-navy text-white font-extrabold flex items-center justify-center text-sm shrink-0 shadow-sm">
+            1
+          </div>
+          <div class="flex-1">
+            <h4 class="text-sm font-bold text-slate-900">Ingresar al sistema</h4>
+            <p class="text-xs text-slate-600 mt-0.5">
+              Accedé con tu usuario y contraseña a <span class="font-mono font-semibold text-sky-700 bg-sky-50 px-1.5 py-0.5 rounded">autenticar.mardelplata.gob.ar</span> (MDQ Digital).
+            </p>
+          </div>
+        </div>
+
+        <!-- Paso 2 -->
+        <div class="p-4 sm:p-5 flex items-start gap-4 hover:bg-slate-50/70 transition">
+          <div class="w-8 h-8 rounded-xl bg-brand-navy text-white font-extrabold flex items-center justify-center text-sm shrink-0 shadow-sm">
+            2
+          </div>
+          <div class="flex-1">
+            <h4 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+              Seleccionar el trámite "Zoonosis"
+            </h4>
+            <p class="text-xs text-slate-600 mt-0.5">
+              En el panel principal de trámites, buscá y presioná el botón azul con la huella blanca identificado como <strong>Zoonosis</strong>.
+            </p>
+          </div>
+        </div>
+
+        <!-- Paso 3 -->
+        <div class="p-4 sm:p-5 flex items-start gap-4 hover:bg-slate-50/70 transition">
+          <div class="w-8 h-8 rounded-xl bg-pink-600 text-white font-extrabold flex items-center justify-center text-sm shrink-0 shadow-sm">
+            3
+          </div>
+          <div class="flex-1">
+            <h4 class="text-sm font-bold text-slate-900">Seleccionar turnos en la Sede Canesa esquina Guanahani</h4>
+            <p class="text-xs text-slate-600 mt-0.5">
+              Elegí la sede central donde funciona el quirófano para intervenciones de castración.
+            </p>
+          </div>
+        </div>
+
+        <!-- Paso 4 -->
+        <div class="p-4 sm:p-5 flex items-start gap-4 hover:bg-slate-50/70 transition">
+          <div class="w-8 h-8 rounded-xl bg-brand-navy text-white font-extrabold flex items-center justify-center text-sm shrink-0 shadow-sm">
+            4
+          </div>
+          <div class="flex-1">
+            <h4 class="text-sm font-bold text-slate-900">En tipo de trámite, seleccionar "Castraciones"</h4>
+            <p class="text-xs text-slate-600 mt-0.5">
+              Marcá la opción quirúrgica de esterilización para tu mascota (perro o gato).
+            </p>
+          </div>
+        </div>
+
+        <!-- Paso 5 -->
+        <div class="p-4 sm:p-5 flex items-start gap-4 hover:bg-slate-50/70 transition">
+          <div class="w-8 h-8 rounded-xl bg-brand-navy text-white font-extrabold flex items-center justify-center text-sm shrink-0 shadow-sm">
+            5
+          </div>
+          <div class="flex-1">
+            <h4 class="text-sm font-bold text-slate-900">Indicar si el turno es para el titular o para un tercero</h4>
+            <p class="text-xs text-slate-600 mt-0.5">
+              En caso de autorizar a otra persona mayor de edad para llevar al animal, completá sus datos (Nombre, Apellido y DNI).
+            </p>
+          </div>
+        </div>
+
+        <!-- Paso 6 -->
+        <div class="p-4 sm:p-5 flex items-start gap-4 hover:bg-slate-50/70 transition">
+          <div class="w-8 h-8 rounded-xl bg-pink-600 text-white font-extrabold flex items-center justify-center text-sm shrink-0 shadow-sm">
+            6
+          </div>
+          <div class="flex-1">
+            <h4 class="text-sm font-bold text-slate-900">Completar la ficha del animal</h4>
+            <div class="text-xs text-slate-600 mt-1 space-y-1">
+              <p><strong class="text-rose-600">• Campos obligatorios:</strong> Especie, Sexo, Edad y Raza.</p>
+              <p><strong class="text-slate-500">• Campos alternativos:</strong> Color y Pelaje.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Paso 7 -->
+        <div class="p-4 sm:p-5 flex items-start gap-4 hover:bg-slate-50/70 transition">
+          <div class="w-8 h-8 rounded-xl bg-brand-navy text-white font-extrabold flex items-center justify-center text-sm shrink-0 shadow-sm">
+            7
+          </div>
+          <div class="flex-1">
+            <h4 class="text-sm font-bold text-slate-900">Aceptar consentimiento quirúrgico y cuidados</h4>
+            <p class="text-xs text-slate-600 mt-0.5">
+              Confirmá los requisitos obligatorios: ayuno estricto (12 hs de sólidos y 6 hs de líquidos) y compromiso de cuidados postoperatorios.
+            </p>
+          </div>
+        </div>
+
+        <!-- Paso 8 -->
+        <div class="p-4 sm:p-5 flex items-start gap-4 hover:bg-slate-50/70 transition bg-emerald-50/20">
+          <div class="w-8 h-8 rounded-xl bg-emerald-600 text-white font-extrabold flex items-center justify-center text-sm shrink-0 shadow-sm">
+            8
+          </div>
+          <div class="flex-1">
+            <h4 class="text-sm font-bold text-slate-900">Consultar turnos disponibles, seleccionar y reservar</h4>
+            <p class="text-xs text-slate-600 mt-0.5">
+              Al pie del formulario, revisá el calendario, elegí fecha y horario disponible y hacé clic en <strong class="text-emerald-700">Reservar</strong> para obtener tu comprobante.
+            </p>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Recordatorio de requisitos clave el día de la cita -->
+      <div class="bg-amber-50 border border-amber-200 rounded-2xl p-5">
+        <h4 class="text-xs sm:text-sm font-bold text-amber-900 flex items-center gap-2 mb-2.5">
+          <i class="fa-solid fa-triangle-exclamation text-amber-600"></i>
+          Recordatorio para el día de la cirugía:
+        </h4>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs text-amber-950">
+          <div class="flex items-start gap-2">
+            <i class="fa-solid fa-utensils text-amber-600 mt-0.5"></i>
+            <div>
+              <span class="font-bold">Ayuno total:</span>
+              <p>12 hs de sólidos y 6 hs de agua antes de la cirugía.</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-2">
+            <i class="fa-solid fa-shield-cat text-amber-600 mt-0.5"></i>
+            <div>
+              <span class="font-bold">Traslado seguro:</span>
+              <p>Perro con correa y collar; gato en transportadora o bolso seguro.</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-2">
+            <i class="fa-solid fa-rug text-amber-600 mt-0.5"></i>
+            <div>
+              <span class="font-bold">Manta limpia:</span>
+              <p>Obligatoria para la recuperación post-anestesia del animal.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div id="view-simulador" class="hidden fade-in space-y-6">
+      
+      <!-- Wizard Progress Bar -->
+      <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-sm">
+        <div class="flex items-center justify-between mb-2">
+          <span class="text-xs font-bold text-brand-navy uppercase tracking-wider">Simulador guiado de solicitud de turno</span>
+          <span id="wizard-step-label" class="text-xs font-semibold text-sky-600 bg-sky-50 px-2.5 py-0.5 rounded-full border border-sky-200">Paso 1 de 5</span>
+        </div>
+        <div class="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+          <div id="wizard-progress-bar" class="bg-sky-600 h-2.5 rounded-full transition-all duration-300" style="width: 20%"></div>
+        </div>
+      </div>
+
+      <!-- Simulator Card Container -->
+      <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+        
+        <!-- Window Mockup Bar -->
+        <div class="bg-slate-900 px-4 py-3 flex items-center justify-between text-white text-xs">
+          <div class="flex items-center gap-2">
+            <div class="flex gap-1.5">
+              <span class="w-2.5 h-2.5 rounded-full bg-rose-500 inline-block"></span>
+              <span class="w-2.5 h-2.5 rounded-full bg-amber-500 inline-block"></span>
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span>
+            </div>
+            <span class="font-mono text-slate-300 ml-2">autenticar.mardelplata.gob.ar/turnos/zoonosis</span>
+          </div>
+          <span class="bg-sky-500/20 text-sky-300 px-2 py-0.5 rounded font-mono text-[11px]">Entorno Demo Interactiva</span>
+        </div>
+
+        <!-- Simulator Form Body -->
+        <div class="p-6 md:p-8">
+          
+          <!-- SIM STEP 1: Acceso y Selección de Trámite -->
+          <div id="sim-step-1" class="space-y-6">
+            <div class="border-b border-slate-200 pb-4">
+              <h4 class="text-lg font-bold text-slate-900">Paso 1 & 2: Identificación y Trámite Zoonosis</h4>
+              <p class="text-sm text-slate-600">Simulación del ingreso con cuenta MDQ Digital y selección de dependencia municipal.</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">DNI del Titular (registrado)</label>
+                <input type="text" id="sim-dni" value="38452109" class="w-full text-sm px-3.5 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-sky-500 focus:outline-none">
+              </div>
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Nombre y Apellido</label>
+                <input type="text" id="sim-nombre" value="María González" class="w-full text-sm px-3.5 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-sky-500 focus:outline-none">
+              </div>
+            </div>
+
+            <!-- Area selection simulation -->
+            <div>
+              <label class="block text-xs font-bold text-slate-800 uppercase tracking-wide mb-2">Seleccione el trámite solicitado:</label>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div class="border-2 border-slate-200 opacity-60 rounded-xl p-3.5 text-center text-xs text-slate-600 flex flex-col items-center justify-center gap-1 cursor-not-allowed">
+                  <i class="fa-solid fa-car text-lg"></i>
+                  <span>Licencias de Conducir</span>
+                </div>
+                <!-- The target button -->
+                <div onclick="selectTrámiteZoonosis()" id="btn-zoonosis-select" class="border-2 border-brand-navy bg-brand-navy text-white rounded-xl p-3.5 text-center text-xs font-bold shadow-md cursor-pointer transition transform hover:scale-[1.02] flex flex-col items-center justify-center gap-1 ring-2 ring-pink-500">
+                  <i class="fa-solid fa-paw text-xl text-pink-400"></i>
+                  <span class="text-sm">Zoonosis</span>
+                  <span class="text-[10px] text-pink-300 font-normal">Castraciones y Sanidad</span>
+                </div>
+                <div class="border-2 border-slate-200 opacity-60 rounded-xl p-3.5 text-center text-xs text-slate-600 flex flex-col items-center justify-center gap-1 cursor-not-allowed">
+                  <i class="fa-solid fa-receipt text-lg"></i>
+                  <span>ARM Tasas</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex justify-end pt-4">
+              <button onclick="goToSimStep(2)" class="px-6 py-2.5 bg-sky-600 hover:bg-sky-700 text-white rounded-xl font-semibold text-sm shadow transition flex items-center gap-2">
+                <span>Continuar a Selección de Sede</span>
+                <i class="fa-solid fa-arrow-right text-xs"></i>
+              </button>
+            </div>
+          </div>
+
+          <div id="sim-step-2" class="hidden space-y-6">
+            <div class="border-b border-slate-200 pb-4">
+              <h4 class="text-lg font-bold text-slate-900">Paso 3 & 4: Sede y Tipo de Intervención</h4>
+              <p class="text-sm text-slate-600">Elegí la sede de atención y el servicio de Castración.</p>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-800 uppercase tracking-wide mb-2">Seleccione la Sede:</label>
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <label class="relative flex items-center p-4 rounded-xl border-2 border-pink-500 bg-pink-50/50 cursor-pointer shadow-sm">
+                  <input type="radio" name="sim-sede" value="Canesa y Guanahani" checked class="text-pink-600 focus:ring-pink-500 h-4 w-4">
+                  <div class="ml-3">
+                    <div class="text-sm font-bold text-slate-900 flex items-center gap-2">
+                      <i class="fa-solid fa-calendar-check text-pink-600"></i> Sede Canesa y Guanahani
+                    </div>
+                    <p class="text-xs text-slate-600">Sede central operativa de Zoonosis Mar del Plata.</p>
+                  </div>
+                </label>
+
+                <label class="relative flex items-center p-4 rounded-xl border border-slate-200 hover:border-slate-300 bg-white cursor-pointer opacity-75">
+                  <input type="radio" name="sim-sede" value="Polideportivo Libertad" class="text-sky-600 focus:ring-sky-500 h-4 w-4">
+                  <div class="ml-3">
+                    <div class="text-sm font-bold text-slate-900">Polideportivo Libertad</div>
+                    <p class="text-xs text-slate-500">Ituzaingó 8350 (Móvil Barrial según cronograma).</p>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <div>
+              <label class="block text-xs font-bold text-slate-800 uppercase tracking-wide mb-2">Tipo de Trámite:</label>
+              <select id="sim-tramite-tipo" class="w-full text-sm px-3.5 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-sky-500 focus:outline-none bg-white font-medium">
+                <option value="Castraciones" selected>Castraciones (Quirófano)</option>
+                <option value="Vacunación Antirrábica">Vacunación Antirrábica</option>
+                <option value="Consulta Veterinaria">Consulta Veterinaria Básica</option>
+              </select>
+            </div>
+
+            <div class="flex justify-between pt-4">
+              <button onclick="goToSimStep(1)" class="px-5 py-2.5 border border-slate-300 hover:bg-slate-50 text-slate-700 rounded-xl font-medium text-sm transition">
+                <i class="fa-solid fa-arrow-left text-xs mr-1"></i> Volver
+              </button>
+              <button onclick="goToSimStep(3)" class="px-6 py-2.5 bg-sky-600 hover:bg-sky-700 text-white rounded-xl font-semibold text-sm shadow transition flex items-center gap-2">
+                <span>Continuar a Responsable</span>
+                <i class="fa-solid fa-arrow-right text-xs"></i>
+              </button>
+            </div>
+          </div>
+
+          <div id="sim-step-3" class="hidden space-y-6">
+            <div class="border-b border-slate-200 pb-4">
+              <h4 class="text-lg font-bold text-slate-900">Paso 5: ¿Quién asiste al turno con el animal?</h4>
+              <p class="text-sm text-slate-600">Si no puede asistir el titular, se deben registrar los datos de la persona autorizada.</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <label onclick="toggleTercero(false)" class="flex items-center p-4 rounded-xl border-2 border-sky-500 bg-sky-50/40 cursor-pointer">
+                <input type="radio" name="sim-asistente" value="titular" checked class="text-sky-600 focus:ring-sky-500 h-4 w-4">
+                <div class="ml-3">
+                  <div class="text-sm font-bold text-slate-900">Asiste el mismo titular</div>
+                  <p class="text-xs text-slate-500">Concurre la persona registrada en MDQ Digital.</p>
+                </div>
+              </label>
+
+              <label onclick="toggleTercero(true)" class="flex items-center p-4 rounded-xl border border-slate-200 hover:border-slate-300 bg-white cursor-pointer">
+                <input type="radio" name="sim-asistente" value="tercero" class="text-sky-600 focus:ring-sky-500 h-4 w-4">
+                <div class="ml-3">
+                  <div class="text-sm font-bold text-slate-900">Autorizo a un tercero</div>
+                  <p class="text-xs text-slate-500">Familiar, vecino o amigo mayor de 18 años.</p>
+                </div>
+              </label>
+            </div>
+
+            <!-- Third party fields -->
+            <div id="tercero-fields" class="hidden p-4 rounded-xl bg-slate-50 border border-slate-200 space-y-3 fade-in">
+              <span class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
+                <i class="fa-solid fa-user-plus text-sky-600"></i> Datos de la persona autorizada:
+              </span>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <input type="text" id="tercero-nombre" placeholder="Nombre y Apellido del Tercero" class="text-sm px-3.5 py-2 border border-slate-300 rounded-lg">
+                <input type="text" id="tercero-dni" placeholder="DNI del Tercero" class="text-sm px-3.5 py-2 border border-slate-300 rounded-lg">
+              </div>
+            </div>
+
+            <div class="flex justify-between pt-4">
+              <button onclick="goToSimStep(2)" class="px-5 py-2.5 border border-slate-300 hover:bg-slate-50 text-slate-700 rounded-xl font-medium text-sm transition">
+                <i class="fa-solid fa-arrow-left text-xs mr-1"></i> Volver
+              </button>
+              <button onclick="goToSimStep(4)" class="px-6 py-2.5 bg-sky-600 hover:bg-sky-700 text-white rounded-xl font-semibold text-sm shadow transition flex items-center gap-2">
+                <span>Continuar a Ficha del Animal</span>
+                <i class="fa-solid fa-arrow-right text-xs"></i>
+              </button>
+            </div>
+          </div>
+
+          <div id="sim-step-4" class="hidden space-y-6">
+            <div class="border-b border-slate-200 pb-4">
+              <h4 class="text-lg font-bold text-slate-900">Paso 6: Ficha del Animal</h4>
+              <p class="text-sm text-slate-600">Complete los datos obligatorios (*) y opcionales de la mascota a castrar.</p>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Especie <span class="text-rose-500">*</span></label>
+                <select id="sim-especie" class="w-full text-sm px-3.5 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-sky-500 bg-white">
+                  <option value="Canino">Canino (Perro)</option>
+                  <option value="Felino">Felino (Gato)</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Sexo <span class="text-rose-500">*</span></label>
+                <select id="sim-sexo" class="w-full text-sm px-3.5 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-sky-500 bg-white">
+                  <option value="Hembra">Hembra</option>
+                  <option value="Macho">Macho</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Edad estimada <span class="text-rose-500">*</span></label>
+                <select id="sim-edad" class="w-full text-sm px-3.5 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-sky-500 bg-white">
+                  <option value="Entre 6 meses y 1 año">6 meses a 1 año</option>
+                  <option value="1 a 3 años" selected>1 a 3 años</option>
+                  <option value="3 a 7 años">3 a 7 años</option>
+                  <option value="Más de 7 años (requiere apto)">Más de 7 años</option>
+                </select>
+              </div>
+
+              <div>
+                <label class="block text-xs font-semibold text-slate-700 mb-1">Raza <span class="text-rose-500">*</span></label>
+                <input type="text" id="sim-raza" value="Mestizo" class="w-full text-sm px-3.5 py-2.5 border border-slate-300 rounded-xl focus:ring-2 focus:ring-sky-500">
+              </div>
+            </div>
+
+            <!-- Optional fields -->
+            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+              <span class="text-xs font-bold text-slate-600 uppercase tracking-wide block mb-3">Campos Alternativos / Descriptivos:</span>
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-semibold text-slate-600 mb-1">Color predominante</label>
+                  <input type="text" id="sim-color" placeholder="Ej: Marrón con manchas blancas" class="w-full text-sm px-3 py-2 border border-slate-300 rounded-lg bg-white">
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-slate-600 mb-1">Tipo de Pelaje</label>
+                  <input type="text" id="sim-pelaje" placeholder="Ej: Corto / Semilargo / Rizado" class="w-full text-sm px-3 py-2 border border-slate-300 rounded-lg bg-white">
+                </div>
+              </div>
+            </div>
+
+            <div class="flex justify-between pt-4">
+              <button onclick="goToSimStep(3)" class="px-5 py-2.5 border border-slate-300 hover:bg-slate-50 text-slate-700 rounded-xl font-medium text-sm transition">
+                <i class="fa-solid fa-arrow-left text-xs mr-1"></i> Volver
+              </button>
+              <button onclick="goToSimStep(5)" class="px-6 py-2.5 bg-sky-600 hover:bg-sky-700 text-white rounded-xl font-semibold text-sm shadow transition flex items-center gap-2">
+                <span>Continuar a Consentimiento y Turnos</span>
+                <i class="fa-solid fa-arrow-right text-xs"></i>
+              </button>
+            </div>
+          </div>
+
+          <div id="sim-step-5" class="hidden space-y-6">
+            <div class="border-b border-slate-200 pb-4">
+              <h4 class="text-lg font-bold text-slate-900">Paso 7 & 8: Consentimiento Quirúrgico y Reserva</h4>
+              <p class="text-sm text-slate-600">Acepte las condiciones legales y elija fecha y horario disponible.</p>
+            </div>
+
+            <!-- Consent box -->
+            <div class="border border-slate-300 rounded-xl p-4 bg-slate-50 text-xs text-slate-700 space-y-3">
+              <div class="font-bold text-slate-900 text-sm flex items-center gap-2">
+                <i class="fa-solid fa-file-contract text-sky-600"></i> Declaración y Consentimiento Quirúrgico
+              </div>
+              <p class="leading-relaxed">
+                Declaro bajo juramento que el animal se encuentra en ayunas (12 hs sólidos, 6 hs líquidos), no está cursando enfermedades agudas ni en gestación avanzada, y asumo el compromiso de brindarle los cuidados postoperatorios indicados por el cuerpo veterinario municipal.
+              </p>
+              
+              <div class="pt-2 border-t border-slate-200 space-y-2">
+                <label class="flex items-center gap-2.5 cursor-pointer font-medium text-slate-800">
+                  <input type="checkbox" id="check-consentimiento" class="w-4 h-4 rounded text-sky-600 focus:ring-sky-500">
+                  <span>Acepto el consentimiento quirúrgico y los requisitos obligatorios de castración.</span>
+                </label>
+                <label class="flex items-center gap-2.5 cursor-pointer font-medium text-slate-800">
+                  <input type="checkbox" id="check-postoperatorio" class="w-4 h-4 rounded text-sky-600 focus:ring-sky-500">
+                  <span>Me comprometo a seguir las pautas postoperatorias y retiro en horario indicado.</span>
+                </label>
+              </div>
+            </div>
+
+            <!-- Turn Slot selection -->
+            <div>
+              <label class="block text-xs font-bold text-slate-800 uppercase tracking-wide mb-2">Turnos disponibles para la Sede Canesa y Guanahani:</label>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <label class="p-3 border-2 border-sky-600 bg-sky-50 rounded-xl cursor-pointer flex flex-col text-center">
+                  <input type="radio" name="sim-slot" value="Lunes 08:30 hs" checked class="sr-only">
+                  <span class="text-xs font-bold text-sky-900">Lunes Próximo</span>
+                  <span class="text-sm font-extrabold text-sky-700 my-0.5">08:30 hs</span>
+                  <span class="text-[10px] text-emerald-700 font-semibold bg-emerald-100 rounded px-1">Cupos libres</span>
+                </label>
+
+                <label class="p-3 border border-slate-300 hover:border-slate-400 bg-white rounded-xl cursor-pointer flex flex-col text-center">
+                  <input type="radio" name="sim-slot" value="Miércoles 09:15 hs" class="sr-only">
+                  <span class="text-xs font-bold text-slate-800">Miércoles Próximo</span>
+                  <span class="text-sm font-extrabold text-slate-700 my-0.5">09:15 hs</span>
+                  <span class="text-[10px] text-emerald-700 font-semibold bg-emerald-100 rounded px-1">Cupos libres</span>
+                </label>
+
+                <label class="p-3 border border-slate-300 hover:border-slate-400 bg-white rounded-xl cursor-pointer flex flex-col text-center">
+                  <input type="radio" name="sim-slot" value="Viernes 08:00 hs" class="sr-only">
+                  <span class="text-xs font-bold text-slate-800">Viernes Próximo</span>
+                  <span class="text-sm font-extrabold text-slate-700 my-0.5">08:00 hs</span>
+                  <span class="text-[10px] text-emerald-700 font-semibold bg-emerald-100 rounded px-1">Cupos libres</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="flex justify-between pt-4">
+              <button onclick="goToSimStep(4)" class="px-5 py-2.5 border border-slate-300 hover:bg-slate-50 text-slate-700 rounded-xl font-medium text-sm transition">
+                <i class="fa-solid fa-arrow-left text-xs mr-1"></i> Volver
+              </button>
+              <button onclick="confirmarReservaSimulada()" class="px-7 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-sm shadow-md hover:shadow-lg transition flex items-center gap-2">
+                <i class="fa-solid fa-calendar-check"></i>
+                <span>Reservar Turno Definitivo</span>
+              </button>
+            </div>
+          </div>
+
+          <div id="sim-step-complete" class="hidden space-y-6 text-center py-4 fade-in">
+            <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-2xl shadow-inner">
+              <i class="fa-solid fa-check"></i>
+            </div>
+            <div>
+              <span class="text-xs font-bold text-emerald-700 uppercase tracking-widest bg-emerald-100 px-3 py-1 rounded-full">Reserva Confirmada Exitosamente</span>
+              <h3 class="text-2xl font-black text-slate-900 mt-2">¡Tu turno ha sido agendado!</h3>
+              <p class="text-slate-600 text-sm max-w-md mx-auto mt-1">Este es tu comprobante digital de Zoonosis Mar del Plata. Podés guardarlo o capturarlo con tu teléfono.</p>
+            </div>
+
+            <!-- Turn voucher ticket -->
+            <div class="max-w-md mx-auto bg-slate-50 border-2 border-dashed border-slate-300 rounded-2xl p-5 text-left text-xs text-slate-800 space-y-3 relative shadow-sm">
+              <div class="flex justify-between items-start border-b border-slate-200 pb-2">
+                <div>
+                  <span class="text-[10px] uppercase font-bold text-slate-500">Trámite</span>
+                  <div class="font-extrabold text-sm text-brand-navy">Castración Canina/Felina</div>
+                </div>
+                <div class="text-right">
+                  <span class="text-[10px] uppercase font-bold text-slate-500">Código Turno</span>
+                  <div id="ticket-codigo" class="font-mono font-bold text-sky-700">ZN-2026-8841</div>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-2 gap-2 text-xs">
+                <div>
+                  <span class="text-slate-500 block text-[10px]">Titular:</span>
+                  <span id="ticket-titular" class="font-bold">María González</span>
+                </div>
+                <div>
+                  <span class="text-slate-500 block text-[10px]">Sede:</span>
+                  <span id="ticket-sede" class="font-bold">Canesa y Guanahani</span>
+                </div>
+                <div>
+                  <span class="text-slate-500 block text-[10px]">Animal / Raza:</span>
+                  <span id="ticket-animal" class="font-bold">Canino • Mestizo</span>
+                </div>
+                <div>
+                  <span class="text-slate-500 block text-[10px]">Horario Asignado:</span>
+                  <span id="ticket-horario" class="font-bold text-pink-600">Lunes 08:30 hs</span>
+                </div>
+              </div>
+
+              <div class="bg-white p-3 rounded-xl border border-slate-200 text-[11px] text-slate-600 flex items-center justify-between gap-3">
+                <div>
+                  <i class="fa-solid fa-clock text-amber-500 mr-1"></i>
+                  Presentarse 15 minutos antes con DNI y manta limpia.
+                </div>
+                <div id="voucher-qr" class="shrink-0 p-1 bg-white border border-slate-200 rounded"></div>
+              </div>
+            </div>
+
+            <div class="flex justify-center gap-3 pt-2">
+              <button onclick="goToSimStep(1)" class="px-5 py-2.5 border border-slate-300 hover:bg-slate-50 text-slate-700 rounded-xl font-medium text-xs">
+                <i class="fa-solid fa-rotate-left mr-1"></i> Reiniciar Simulador
+              </button>
+              <button onclick="showToast('Comprobante listo. Podés imprimirlo o mostrarlo en tu teléfono en la sede.')" class="px-5 py-2.5 bg-brand-navy hover:bg-slate-900 text-white rounded-xl font-semibold text-xs shadow flex items-center gap-1.5">
+                <i class="fa-solid fa-print"></i> Guardar Comprobante
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div id="view-puntos" class="hidden fade-in space-y-6">
+      
+      <div class="border-b border-slate-200 pb-4">
+        <h3 class="text-xl font-extrabold text-slate-900 flex items-center gap-2">
+          <i class="fa-solid fa-map-location-dot text-pink-600"></i>
+          Puntos de Atención y Sedes de Consulta
+        </h3>
+        <p class="text-sm text-slate-600 mt-0.5">
+          Escaneá con tu celular el QR de cada sede para abrir la ubicación directa en Google Maps o consultar cómo llegar en colectivo o auto.
+        </p>
+      </div>
+
+      <!-- Locations Cards Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+        <!-- Sede 1: Zoonosis Central -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs font-bold uppercase tracking-wider bg-pink-50 text-pink-700 px-2.5 py-1 rounded-full border border-pink-200">
+                Sede Central
+              </span>
+              <span class="text-xs text-slate-500 font-medium">Quirófano Fijo</span>
+            </div>
+            
+            <h4 class="text-lg font-bold text-slate-900">Sede Zoonosis MGP</h4>
+            <p class="text-xs font-semibold text-pink-600 mb-2">Canesa y Guanahani</p>
+            <p class="text-xs text-slate-600 mb-4 leading-relaxed">
+              Atención integral para cirugías programadas, vacunación antirrábica obligatoria y control de sanidad animal.
+            </p>
+
+            <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 flex flex-col items-center text-center mb-4">
+              <div id="qr-sede-canesa" class="bg-white p-2 rounded-lg border border-slate-200 shadow-inner"></div>
+              <span class="text-[11px] font-bold text-slate-700 mt-2">QR Ubicación Canesa y Guanahani</span>
+              <span class="text-[10px] text-slate-500">Escaneá para navegar</span>
+            </div>
+          </div>
+
+          <div class="space-y-2 pt-3 border-t border-slate-100">
+            <button onclick="openQrModal('Sede Zoonosis Canesa y Guanahani', 'https://maps.google.com/?q=Canesa+y+Guanahani+Mar+del+Plata', 'Canesa y Guanahani, Mar del Plata')" class="w-full text-xs font-semibold py-2 px-3 bg-pink-50 text-pink-700 hover:bg-pink-100 rounded-xl transition flex items-center justify-center gap-1.5 border border-pink-200">
+              <i class="fa-solid fa-expand"></i> Ampliar QR
+            </button>
+            <a href="https://maps.google.com/?q=Canesa+y+Guanahani+Mar+del+Plata" target="_blank" rel="noopener noreferrer" class="w-full text-xs font-semibold py-2 px-3 bg-slate-900 text-white hover:bg-slate-800 rounded-xl transition flex items-center justify-center gap-1.5">
+              <i class="fa-solid fa-diamond-turn-right"></i> Abrir en Google Maps
+            </a>
+          </div>
+        </div>
+
+        <!-- Sede 2: Polideportivo Libertad -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs font-bold uppercase tracking-wider bg-sky-50 text-sky-700 px-2.5 py-1 rounded-full border border-sky-200">
+                Punto Barrial
+              </span>
+              <span class="text-xs text-slate-500 font-medium">Quirófano Móvil</span>
+            </div>
+            
+            <h4 class="text-lg font-bold text-slate-900">Polideportivo Libertad</h4>
+            <p class="text-xs font-semibold text-sky-700 mb-2">Ituzaingó 8350, Mar del Plata</p>
+            <p class="text-xs text-slate-600 mb-4 leading-relaxed">
+              Punto de consulta, asesoramiento a vecinos del barrio y base operativa rotativa de esterilización de mascotas.
+            </p>
+
+            <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 flex flex-col items-center text-center mb-4">
+              <div id="qr-sede-libertad" class="bg-white p-2 rounded-lg border border-slate-200 shadow-inner"></div>
+              <span class="text-[11px] font-bold text-slate-700 mt-2">QR Polideportivo Libertad</span>
+              <span class="text-[10px] text-slate-500">Ituzaingó 8350</span>
+            </div>
+          </div>
+
+          <div class="space-y-2 pt-3 border-t border-slate-100">
+            <button onclick="openQrModal('Polideportivo Libertad', 'https://maps.app.goo.gl/e1FLqfcTdYfVujRZA', 'Ituzaingó 8350, B7606EGT Mar del Plata')" class="w-full text-xs font-semibold py-2 px-3 bg-sky-50 text-sky-700 hover:bg-sky-100 rounded-xl transition flex items-center justify-center gap-1.5 border border-sky-200">
+              <i class="fa-solid fa-expand"></i> Ampliar QR
+            </button>
+            <a href="https://maps.app.goo.gl/e1FLqfcTdYfVujRZA" target="_blank" rel="noopener noreferrer" class="w-full text-xs font-semibold py-2 px-3 bg-slate-900 text-white hover:bg-slate-800 rounded-xl transition flex items-center justify-center gap-1.5">
+              <i class="fa-solid fa-diamond-turn-right"></i> Abrir en Google Maps
+            </a>
+          </div>
+        </div>
+
+        <!-- Sede 3: Polideportivo Colinas de Peralta Ramos -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition flex flex-col justify-between">
+          <div>
+            <div class="flex items-center justify-between mb-3">
+              <span class="text-xs font-bold uppercase tracking-wider bg-emerald-50 text-emerald-800 px-2.5 py-1 rounded-full border border-emerald-200">
+                Punto Barrial
+              </span>
+              <span class="text-xs text-slate-500 font-medium">Quirófano Móvil</span>
+            </div>
+            
+            <h4 class="text-lg font-bold text-slate-900">Polideportivo Colinas</h4>
+            <p class="text-xs font-semibold text-emerald-800 mb-2">Albert Einstein 1502, Mar del Plata</p>
+            <p class="text-xs text-slate-600 mb-4 leading-relaxed">
+              Atención y punto de encuentro comunitario para registro de trámites e información sanitaria animal.
+            </p>
+
+            <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 flex flex-col items-center text-center mb-4">
+              <div id="qr-sede-colinas" class="bg-white p-2 rounded-lg border border-slate-200 shadow-inner"></div>
+              <span class="text-[11px] font-bold text-slate-700 mt-2">QR Colinas de Peralta Ramos</span>
+              <span class="text-[10px] text-slate-500">Albert Einstein 1502</span>
+            </div>
+          </div>
+
+          <div class="space-y-2 pt-3 border-t border-slate-100">
+            <button onclick="openQrModal('Polideportivo Colinas de Peralta Ramos', 'https://maps.app.goo.gl/p8RSDkeRbakHVdvX9', 'Albert Einstein 1502, B7603CBL Mar del Plata')" class="w-full text-xs font-semibold py-2 px-3 bg-emerald-50 text-emerald-800 hover:bg-emerald-100 rounded-xl transition flex items-center justify-center gap-1.5 border border-emerald-200">
+              <i class="fa-solid fa-expand"></i> Ampliar QR
+            </button>
+            <a href="https://maps.app.goo.gl/p8RSDkeRbakHVdvX9" target="_blank" rel="noopener noreferrer" class="w-full text-xs font-semibold py-2 px-3 bg-slate-900 text-white hover:bg-slate-800 rounded-xl transition flex items-center justify-center gap-1.5">
+              <i class="fa-solid fa-diamond-turn-right"></i> Abrir en Google Maps
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Automation explanation callout -->
+      <div class="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm mt-6">
+        <h4 class="text-base font-bold text-slate-900 mb-3 flex items-center gap-2">
+          <i class="fa-solid fa-bolt text-amber-500"></i> ¿Cómo automatiza este sistema el flujo vecinal con QR?
+        </h4>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-5 text-xs text-slate-600">
+          <div class="space-y-1">
+            <span class="font-bold text-slate-800 block text-sm">1. Cartelería y Totems</span>
+            <p>Se colocan tótems con el QR del portal en polideportivos y salas de salud para que la persona no deba hacer filas de espera para consultar turnos.</p>
+          </div>
+          <div class="space-y-1">
+            <span class="font-bold text-slate-800 block text-sm">2. Acceso Autenticar Directo</span>
+            <p>Al escanear el QR, el navegador del móvil abre de inmediato la pantalla de autenticación de Mar del Plata con el trámite de Zoonosis precargado.</p>
+          </div>
+          <div class="space-y-1">
+            <span class="font-bold text-slate-800 block text-sm">3. Geolocalización Instantánea</span>
+            <p>Los QR de cada sede guían mediante GPS a la persona para que llegue con exactitud a Canesa y Guanahani o al Polideportivo que le fue asignado.</p>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <div id="qr-modal" class="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm hidden items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-sm w-full p-6 text-center shadow-2xl relative border border-slate-100 fade-in">
+      <button onclick="closeQrModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-700 text-lg w-8 h-8 rounded-full flex items-center justify-center hover:bg-slate-100">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div class="w-12 h-12 bg-pink-100 text-pink-600 rounded-2xl flex items-center justify-center mx-auto mb-3 text-xl">
+        <i class="fa-solid fa-qrcode"></i>
+      </div>
+
+      <h3 id="modal-qr-title" class="font-black text-slate-900 text-lg mb-1">Código QR</h3>
+      <p id="modal-qr-subtitle" class="text-xs text-slate-500 mb-4 break-words">Apunta tu cámara para abrir el enlace</p>
+
+      <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200 inline-block mb-4">
+        <div id="modal-qr-canvas" class="flex justify-center items-center"></div>
+      </div>
+
+      <div class="flex flex-col gap-2">
+        <a id="modal-qr-link" href="#" target="_blank" rel="noopener noreferrer" class="w-full py-2.5 bg-brand-navy hover:bg-slate-800 text-white font-semibold text-xs rounded-xl transition flex items-center justify-center gap-1.5">
+          <i class="fa-solid fa-arrow-up-right-from-square"></i> Abrir Enlace Directo
+        </a>
+        <button onclick="closeQrModal()" class="w-full py-2 text-slate-600 hover:bg-slate-100 font-medium text-xs rounded-xl transition">
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <script>
+    // State management
+    let currentTab = 'guia';
+    let currentSimStep = 1;
+    let modalQrInstance = null;
+    let flipQrLibertad = null;
+    let flipQrColinas = null;
+    let flipQrTurno = null;
+    let currentFlipMode = 'registro';
+
+    // STEP GUIDE DATA & INTERACTIVE LOGIC
+    let activeGuideStep = 1;
+    let guideViewMode = 'interactivo';
+
+    const GUIDE_STEPS = [
+      {
+        step: 1,
+        category: 'Acceso al Sistema',
+        title: 'Ingresar al Sistema MDQ Digital',
+        desc: 'Ingresá con tu usuario y clave a <strong>autenticar.mardelplata.gob.ar</strong>. Si todavía no tenés usuario registrado, podés darte de alta en el portal o consultar presencialmente en los polideportivos habilitados.',
+        keyPoint: 'Tené a mano tu DNI y tu clave de MDQ Digital. Si no tenés cuenta, completá el registro inicial.',
+        url: 'autenticar.mardelplata.gob.ar/login',
+        icon: 'fa-solid fa-user-lock',
+        renderGraphic: () => `
+          <div class="w-full max-w-sm bg-white rounded-2xl p-5 text-slate-800 shadow-2xl space-y-4 step-animated border border-slate-100">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div class="flex items-center gap-2">
+                <span class="w-7 h-7 rounded-lg bg-sky-100 text-sky-700 flex items-center justify-center font-bold text-xs">MDQ</span>
+                <span class="text-xs font-bold text-slate-700">Autenticar Digital</span>
+              </div>
+              <span class="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+                <i class="fa-solid fa-lock text-[9px]"></i> Seguro
+              </span>
+            </div>
+            <div class="space-y-2.5">
+              <div class="space-y-1">
+                <span class="text-[11px] font-semibold text-slate-500">DNI / CUIL</span>
+                <div class="px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-mono text-slate-700 flex items-center justify-between">
+                  <span>38.452.109</span>
+                  <i class="fa-solid fa-id-card text-slate-400"></i>
+                </div>
+              </div>
+              <div class="space-y-1">
+                <span class="text-[11px] font-semibold text-slate-500">Contraseña</span>
+                <div class="px-3 py-2 rounded-xl bg-slate-50 border border-slate-200 text-xs font-mono text-slate-700 flex items-center justify-between">
+                  <span>••••••••••••</span>
+                  <i class="fa-solid fa-eye text-slate-400"></i>
+                </div>
+              </div>
+            </div>
+            <div class="pt-1">
+              <div class="w-full py-2.5 bg-brand-navy text-white text-xs font-bold rounded-xl text-center shadow-md flex items-center justify-center gap-2">
+                <i class="fa-solid fa-arrow-right-to-bracket text-pink-400"></i> Ingresar al Portal
+              </div>
+            </div>
+          </div>
+        `
+      },
+      {
+        step: 2,
+        category: 'Trámite Municipal',
+        title: 'Seleccionar el trámite "Zoonosis"',
+        desc: 'Dentro del panel de trámites y dependencias municipales, buscá y presioná el botón azul con la huella blanca identificado como <strong>Zoonosis</strong>.',
+        keyPoint: 'El icono de la huella blanca sobre fondo azul es el acceso oficial para castraciones y sanidad animal.',
+        url: 'autenticar.mardelplata.gob.ar/tramites',
+        icon: 'fa-solid fa-paw',
+        renderGraphic: () => `
+          <div class="flex flex-col items-center justify-center step-animated">
+            <!-- Exact reproduction of the Zoonosis Card from Municipal Word Document -->
+            <div class="relative group cursor-pointer transition-transform transform hover:scale-105">
+              <div class="w-56 h-36 bg-[#1A365D] rounded-3xl p-5 flex flex-col items-center justify-center shadow-[0_12px_30px_rgba(225,29,72,0.35)] border-4 border-pink-400/40 relative overflow-hidden pulse-glow">
+                <div class="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center mb-2 shadow-inner">
+                  <i class="fa-solid fa-paw text-3xl text-white"></i>
+                </div>
+                <span class="text-xl font-extrabold text-white tracking-wide">Zoonosis</span>
+                <!-- Animated click indicator -->
+                <div class="absolute bottom-2 right-2 bg-pink-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-full flex items-center gap-1 shadow animate-bounce">
+                  <i class="fa-solid fa-hand-pointer text-[9px]"></i> Clic aquí
+                </div>
+              </div>
+            </div>
+            <span class="text-xs text-slate-300 mt-4 font-medium flex items-center gap-1.5">
+              <i class="fa-solid fa-circle-check text-pink-400"></i> Botón oficial de dependencia Zoonosis MGP
+            </span>
+          </div>
+        `
+      },
+      {
+        step: 3,
+        category: 'Punto de Atención',
+        title: 'Seleccionar la Sede Canesa esquina Guanahani',
+        desc: 'Elegí los turnos correspondientes a la <strong>Sede de Canesa esquina Guanahani</strong> (sede quirúrgica central de Zoonosis Mar del Plata).',
+        keyPoint: 'Es la sede fija donde funciona el quirófano central de esterilizaciones.',
+        url: 'autenticar.mardelplata.gob.ar/zoonosis/sedes',
+        icon: 'fa-solid fa-calendar-check',
+        renderGraphic: () => `
+          <div class="flex flex-col items-center justify-center step-animated">
+            <!-- Exact reproduction of Sede Canesa Card from Municipal Word Document -->
+            <div class="w-64 bg-white rounded-3xl p-6 border-4 border-pink-500 shadow-[0_12px_30px_rgba(244,63,94,0.3)] flex flex-col items-center text-center cursor-pointer transition transform hover:scale-105">
+              <div class="w-14 h-14 rounded-2xl bg-pink-50 flex items-center justify-center text-pink-600 text-2xl mb-3 shadow-inner">
+                <i class="fa-solid fa-calendar-days"></i>
+              </div>
+              <span class="text-base font-black text-[#1A365D] tracking-wider uppercase leading-tight">TURNOS</span>
+              <span class="text-xs font-extrabold text-[#1A365D] uppercase mt-1">SEDE ZOONOSIS</span>
+              <span class="text-xs font-bold text-pink-600 uppercase mt-0.5 tracking-wide">CANESA Y GUANAHANI</span>
+              
+              <div class="mt-4 pt-3 border-t border-slate-100 w-full flex items-center justify-center gap-1 text-[11px] font-bold text-emerald-600 bg-emerald-50 py-1.5 rounded-xl">
+                <i class="fa-solid fa-location-dot"></i> Sede Seleccionada
+              </div>
+            </div>
+          </div>
+        `
+      },
+      {
+        step: 4,
+        category: 'Intervención Quirúrgica',
+        title: 'En tipo de trámite, seleccionar "Castraciones"',
+        desc: 'Dentro de las opciones de atención de la sede, marcá específicamente <strong>Castraciones</strong> para reservar el cupo de cirugía veterinaria.',
+        keyPoint: 'Asegurate de elegir "Castraciones" y no consultas clínicas generales para acceder al quirófano.',
+        url: 'autenticar.mardelplata.gob.ar/zoonosis/tipo',
+        icon: 'fa-solid fa-stethoscope',
+        renderGraphic: () => `
+          <div class="w-full max-w-sm bg-white rounded-2xl p-5 shadow-2xl step-animated border border-slate-100 space-y-3">
+            <span class="text-xs font-bold text-slate-500 uppercase tracking-wider block">Seleccione tipo de trámite:</span>
+            
+            <div class="p-3.5 rounded-xl border-2 border-pink-500 bg-pink-50 text-slate-900 flex items-center justify-between shadow-sm cursor-pointer">
+              <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-xl bg-pink-600 text-white flex items-center justify-center text-sm shadow">
+                  <i class="fa-solid fa-scissors"></i>
+                </div>
+                <div>
+                  <div class="text-sm font-extrabold text-slate-900">Castraciones</div>
+                  <div class="text-[10px] text-pink-700 font-semibold">Cirugía y Esterilización Canina / Felina</div>
+                </div>
+              </div>
+              <i class="fa-solid fa-circle-check text-pink-600 text-lg"></i>
+            </div>
+
+            <div class="p-3 rounded-xl border border-slate-200 text-slate-400 flex items-center justify-between opacity-60">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-slate-100 text-slate-400 flex items-center justify-center text-xs">
+                  <i class="fa-solid fa-syringe"></i>
+                </div>
+                <div class="text-xs font-semibold">Vacunación Antirrábica</div>
+              </div>
+            </div>
+          </div>
+        `
+      },
+      {
+        step: 5,
+        category: 'Responsable',
+        title: 'Indicar si es para el Titular o para un Tercero',
+        desc: 'Indicá si el turno es para el mismo titular o para otra persona. En caso de no poder asistir, se deberán completar los datos del <strong>tercero autorizado</strong> (mayor de 18 años).',
+        keyPoint: 'Si asiste un tercero, ingresá su nombre completo y DNI. Deberá presentarse con su identificación.',
+        url: 'autenticar.mardelplata.gob.ar/zoonosis/responsable',
+        icon: 'fa-solid fa-users',
+        renderGraphic: () => `
+          <div class="w-full max-w-sm bg-white rounded-2xl p-5 shadow-2xl step-animated border border-slate-100 space-y-3">
+            <span class="text-xs font-bold text-slate-600 uppercase tracking-wider block">¿Quién concurre con el animal?</span>
+            
+            <div class="grid grid-cols-2 gap-2.5">
+              <div class="p-3 rounded-xl border border-slate-200 text-center opacity-70">
+                <i class="fa-solid fa-user text-slate-400 text-base mb-1 block"></i>
+                <span class="text-xs font-bold text-slate-700 block">Mismo Titular</span>
+                <span class="text-[9px] text-slate-400">Titular MDQ Digital</span>
+              </div>
+
+              <div class="p-3 rounded-xl border-2 border-sky-600 bg-sky-50 text-center shadow-sm">
+                <i class="fa-solid fa-user-plus text-sky-600 text-base mb-1 block"></i>
+                <span class="text-xs font-bold text-sky-900 block">Tercero Autorizado</span>
+                <span class="text-[9px] text-sky-700 font-semibold">Familiar o vecino</span>
+              </div>
+            </div>
+
+            <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 text-[11px] text-slate-700 space-y-2">
+              <div class="font-bold text-slate-800 flex items-center gap-1.5 text-xs">
+                <i class="fa-solid fa-id-card text-sky-600"></i> Datos del Tercero Autorizado:
+              </div>
+              <div class="flex justify-between border-b border-slate-200 pb-1">
+                <span class="text-slate-500">Nombre:</span>
+                <span class="font-bold">Carlos Gómez</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-500">DNI:</span>
+                <span class="font-bold font-mono">31.204.889</span>
+              </div>
+            </div>
+          </div>
+        `
+      },
+      {
+        step: 6,
+        category: 'Ficha Clínica',
+        title: 'Ficha del Animal: Campos Obligatorios y Alternativos',
+        desc: 'Seleccionar la <strong>especie, sexo, edad y raza</strong> del animal como campos obligatorios (*). Como campos alternativos y opcionales, indicar el <strong>color y el pelaje</strong>.',
+        keyPoint: 'Los 4 obligatorios: Especie, Sexo, Edad y Raza. Ayudan al cálculo de la dosis anestésica.',
+        url: 'autenticar.mardelplata.gob.ar/zoonosis/mascota',
+        icon: 'fa-solid fa-dog',
+        renderGraphic: () => `
+          <div class="w-full max-w-sm bg-white rounded-2xl p-5 shadow-2xl step-animated border border-slate-100 space-y-3">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+              <span class="text-xs font-black text-slate-800 flex items-center gap-1.5">
+                <i class="fa-solid fa-shield-cat text-pink-600"></i> Ficha del Paciente
+              </span>
+              <span class="text-[10px] font-bold text-rose-600 bg-rose-50 px-2 py-0.5 rounded-full">* 4 Obligatorios</span>
+            </div>
+
+            <!-- Obligatorios visual grid -->
+            <div class="grid grid-cols-2 gap-2 text-xs">
+              <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+                <span class="text-[10px] text-slate-500 block font-semibold">Especie *</span>
+                <span class="font-extrabold text-slate-800 flex items-center gap-1 mt-0.5">
+                  <i class="fa-solid fa-dog text-pink-500"></i> Canino / Perro
+                </span>
+              </div>
+              <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+                <span class="text-[10px] text-slate-500 block font-semibold">Sexo *</span>
+                <span class="font-extrabold text-slate-800 flex items-center gap-1 mt-0.5">
+                  <i class="fa-solid fa-venus text-rose-500"></i> Hembra
+                </span>
+              </div>
+              <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+                <span class="text-[10px] text-slate-500 block font-semibold">Edad Estimada *</span>
+                <span class="font-extrabold text-slate-800 mt-0.5 block">2 años</span>
+              </div>
+              <div class="p-2.5 rounded-xl bg-slate-50 border border-slate-200">
+                <span class="text-[10px] text-slate-500 block font-semibold">Raza *</span>
+                <span class="font-extrabold text-slate-800 mt-0.5 block">Mestizo</span>
+              </div>
+            </div>
+
+            <!-- Opcionales -->
+            <div class="p-2.5 rounded-xl bg-sky-50/50 border border-sky-200/80 text-[11px] text-slate-600 flex justify-between items-center">
+              <div>
+                <span class="text-[10px] font-bold text-sky-800 uppercase block">Campos Opcionales:</span>
+                <span>Color: Marrón / Pelaje: Corto</span>
+              </div>
+              <i class="fa-solid fa-circle-info text-sky-600 text-sm"></i>
+            </div>
+          </div>
+        `
+      },
+      {
+        step: 7,
+        category: 'Consentimiento',
+        title: 'Aceptar el Consentimiento Quirúrgico y Cuidados',
+        desc: 'Por último, aceptar en el formulario el <strong>consentimiento quirúrgico</strong>, los requisitos obligatorios para la castración (ayuno de 12 hs de sólidos y 6 hs de líquidos) y los cuidados postoperatorios.',
+        keyPoint: 'El ayuno previo y la manta limpia son indispensables para resguardar la vida y recuperación del animal.',
+        url: 'autenticar.mardelplata.gob.ar/zoonosis/consentimiento',
+        icon: 'fa-solid fa-file-signature',
+        renderGraphic: () => `
+          <div class="w-full max-w-sm bg-white rounded-2xl p-5 shadow-2xl step-animated border border-slate-100 space-y-3 text-xs">
+            <div class="flex items-center gap-2 border-b border-slate-100 pb-2">
+              <i class="fa-solid fa-clipboard-check text-emerald-600 text-lg"></i>
+              <span class="font-black text-slate-900">Declaración Jurada y Aceptación</span>
+            </div>
+
+            <div class="space-y-2">
+              <div class="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 flex items-start gap-2.5 text-[11px] text-emerald-950">
+                <i class="fa-solid fa-circle-check text-emerald-600 text-sm mt-0.5"></i>
+                <div>
+                  <span class="font-bold">Acepto Consentimiento Quirúrgico</span>
+                  <p class="text-[10px] text-emerald-800 mt-0.5">Autorizo la intervención y declaro el estado de salud del animal.</p>
+                </div>
+              </div>
+
+              <div class="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 flex items-start gap-2.5 text-[11px] text-emerald-950">
+                <i class="fa-solid fa-circle-check text-emerald-600 text-sm mt-0.5"></i>
+                <div>
+                  <span class="font-bold">Cumplimiento de Ayuno Estricto</span>
+                  <p class="text-[10px] text-emerald-800 mt-0.5">12 horas de sólidos y 6 horas de líquidos previo al turno.</p>
+                </div>
+              </div>
+
+              <div class="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 flex items-start gap-2.5 text-[11px] text-emerald-950">
+                <i class="fa-solid fa-circle-check text-emerald-600 text-sm mt-0.5"></i>
+                <div>
+                  <span class="font-bold">Cuidados Postoperatorios</span>
+                  <p class="text-[10px] text-emerald-800 mt-0.5">Llevar manta y cumplir retiro y medicación indicada.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        `
+      },
+      {
+        step: 8,
+        category: 'Confirmación Final',
+        title: 'Consultar turnos, seleccionar fecha y reservar',
+        desc: 'Consultar al final del formulario los cupos disponibles en el calendario, seleccionar el día y horario más conveniente y hacer clic en <strong>Reservar</strong> para obtener el comprobante digital.',
+        keyPoint: 'El sistema emite el número de turno con fecha, hora y sede asignada. Podés guardarlo en tu teléfono.',
+        url: 'autenticar.mardelplata.gob.ar/zoonosis/confirmacion',
+        icon: 'fa-solid fa-circle-check',
+        renderGraphic: () => `
+          <div class="w-full max-w-sm bg-white rounded-2xl p-5 shadow-2xl step-animated border border-slate-100 space-y-3.5">
+            <span class="text-xs font-black text-slate-800 block uppercase tracking-wider">Cupos Libres - Canesa y Guanahani</span>
+
+            <!-- Slot picker -->
+            <div class="grid grid-cols-2 gap-2">
+              <div class="p-3 rounded-xl border-2 border-emerald-500 bg-emerald-50 text-center shadow-sm">
+                <span class="text-[10px] font-bold text-emerald-800 uppercase block">Próximo Lunes</span>
+                <span class="text-base font-extrabold text-emerald-700 block my-0.5">08:30 hs</span>
+                <span class="text-[9px] font-bold bg-emerald-200 text-emerald-900 px-1.5 py-0.5 rounded">Seleccionado</span>
+              </div>
+
+              <div class="p-3 rounded-xl border border-slate-200 text-center opacity-60">
+                <span class="text-[10px] font-semibold text-slate-500 uppercase block">Miércoles</span>
+                <span class="text-base font-bold text-slate-700 block my-0.5">09:15 hs</span>
+                <span class="text-[9px] text-slate-400">Cupo libre</span>
+              </div>
+            </div>
+
+            <!-- Reserve Button Simulation -->
+            <div class="pt-1">
+              <div class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-black text-xs text-center shadow-lg flex items-center justify-center gap-2 cursor-pointer transition transform hover:scale-[1.02]">
+                <i class="fa-solid fa-calendar-check text-sm"></i>
+                <span>RESERVAR TURNO DEFINITIVO</span>
+              </div>
+            </div>
+            
+            <p class="text-[10px] text-slate-400 text-center">Recibirás confirmación digital de Zoonosis MGP</p>
+          </div>
+        `
+      }
+    ];
+
+    // Build the stepper pill navigation
+    function renderStepNavPills() {
+      const container = document.getElementById('step-nav-pills');
+      if (!container) return;
+      container.innerHTML = '';
+
+      GUIDE_STEPS.forEach((item) => {
+        const isActive = item.step === activeGuideStep;
+        const btn = document.createElement('button');
+        btn.onclick = () => setGuideStep(item.step);
+        btn.className = `flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all ${
+          isActive 
+            ? 'bg-brand-navy text-white shadow-md ring-2 ring-pink-500 scale-105' 
+            : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900'
+        }`;
+        
+        btn.innerHTML = `
+          <span class="w-5 h-5 rounded-lg ${isActive ? 'bg-pink-500 text-white' : 'bg-slate-300 text-slate-700'} flex items-center justify-center text-[10px] font-black">
+            ${item.step}
+          </span>
+          <i class="${item.icon} text-xs ${isActive ? 'text-pink-300' : 'text-slate-400'}"></i>
+          <span class="hidden sm:inline whitespace-nowrap">${item.category}</span>
+        `;
+        container.appendChild(btn);
+      });
+    }
+
+    // Update the interactive guide card view
+    function updateInteractiveGuideCard() {
+      const data = GUIDE_STEPS.find(s => s.step === activeGuideStep) || GUIDE_STEPS[0];
+      
+      // Update text fields
+      document.getElementById('guide-badge-number').textContent = data.step;
+      document.getElementById('guide-category-tag').textContent = data.category;
+      document.getElementById('guide-step-title').textContent = data.title;
+      document.getElementById('guide-step-desc').innerHTML = data.desc;
+      document.getElementById('guide-key-point-text').textContent = data.keyPoint;
+      document.getElementById('graphic-header-url').textContent = data.url;
+      document.getElementById('graphic-step-badge').textContent = `Paso ${data.step} de 8`;
+      document.getElementById('guide-page-indicator').textContent = `${data.step} / 8`;
+
+      // Update graphic sandbox
+      const screenContainer = document.getElementById('graphic-screen-content');
+      if (screenContainer) {
+        screenContainer.innerHTML = data.renderGraphic();
+      }
+
+      // Update button states
+      const prevBtn = document.getElementById('btn-guide-prev');
+      const nextBtn = document.getElementById('btn-guide-next');
+      if (prevBtn) prevBtn.disabled = (data.step === 1);
+      if (nextBtn) {
+        if (data.step === 8) {
+          nextBtn.innerHTML = `<span>Probar en Simulador</span> <i class="fa-solid fa-play text-xs"></i>`;
+        } else {
+          nextBtn.innerHTML = `<span>Siguiente</span> <i class="fa-solid fa-arrow-right text-xs"></i>`;
+        }
+      }
+
+      // Re-render navigation pills to update active state
+      renderStepNavPills();
+    }
+
+    function setGuideStep(stepNumber) {
+      if (stepNumber < 1 || stepNumber > 8) return;
+      activeGuideStep = stepNumber;
+      updateInteractiveGuideCard();
+    }
+
+    function nextGuideStep() {
+      if (activeGuideStep < 8) {
+        setGuideStep(activeGuideStep + 1);
+      } else {
+        // If at step 8, offer to go to simulator
+        switchTab('simulador');
+      }
+    }
+
+    function prevGuideStep() {
+      if (activeGuideStep > 1) {
+        setGuideStep(activeGuideStep - 1);
+      }
+    }
+
+    function setGuideViewMode(mode) {
+      guideViewMode = mode;
+      const interactiveContainer = document.getElementById('guide-interactive-container');
+      const gridContainer = document.getElementById('guide-grid-container');
+      const btnInteractivo = document.getElementById('btn-mode-interactivo');
+      const btnGrilla = document.getElementById('btn-mode-grilla');
+
+      if (mode === 'interactivo') {
+        interactiveContainer.classList.remove('hidden');
+        gridContainer.classList.add('hidden');
+        btnInteractivo.className = "px-3 py-1.5 rounded-lg bg-white text-slate-900 shadow-sm transition flex items-center gap-1.5";
+        btnGrilla.className = "px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition flex items-center gap-1.5";
+      } else {
+        interactiveContainer.classList.add('hidden');
+        gridContainer.classList.remove('hidden');
+        btnGrilla.className = "px-3 py-1.5 rounded-lg bg-white text-slate-900 shadow-sm transition flex items-center gap-1.5";
+        btnInteractivo.className = "px-3 py-1.5 rounded-lg text-slate-600 hover:text-slate-900 transition flex items-center gap-1.5";
+      }
+    }
+
+    function selectStepAndSwitch(stepNumber) {
+      setGuideStep(stepNumber);
+      setGuideViewMode('interactivo');
+      const interactiveContainer = document.getElementById('guide-interactive-container');
+      if (interactiveContainer) {
+        interactiveContainer.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+
+    // QR destinations from user request
+    const QR_URLS = {
+      portal: 'https://autenticar.mardelplata.gob.ar/',
+      registro: 'https://autenticar.mardelplata.gob.ar/',
+      turno: 'https://autenticar.mardelplata.gob.ar/',
+      canesa: 'https://maps.google.com/?q=Canesa+y+Guanahani+Mar+del+Plata',
+      libertad: 'https://maps.app.goo.gl/e1FLqfcTdYfVujRZA',
+      colinas: 'https://maps.app.goo.gl/p8RSDkeRbakHVdvX9'
+    };
+
+    // Initialize QRs when DOM is loaded
+    window.addEventListener('DOMContentLoaded', () => {
+      // Initialize side-by-side QRs on card back
+      flipQrLibertad = new QRCode(document.getElementById("flip-qr-libertad"), {
+        text: QR_URLS.libertad,
+        width: 140,
+        height: 140,
+        colorDark: "#0284C7",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.M
+      });
+
+      flipQrColinas = new QRCode(document.getElementById("flip-qr-colinas"), {
+        text: QR_URLS.colinas,
+        width: 140,
+        height: 140,
+        colorDark: "#0D9488",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.M
+      });
+
+      // Initialize single Turno QR on card back
+      flipQrTurno = new QRCode(document.getElementById("flip-qr-turno"), {
+        text: QR_URLS.turno,
+        width: 180,
+        height: 180,
+        colorDark: "#1A365D",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.M
+      });
+
+      // Sede Canesa QR
+      new QRCode(document.getElementById("qr-sede-canesa"), {
+        text: QR_URLS.canesa,
+        width: 115,
+        height: 115,
+        colorDark: "#0f172a",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.M
+      });
+
+      // Polideportivo Libertad QR
+      new QRCode(document.getElementById("qr-sede-libertad"), {
+        text: QR_URLS.libertad,
+        width: 115,
+        height: 115,
+        colorDark: "#0f172a",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.M
+      });
+
+      // Polideportivo Colinas QR
+      new QRCode(document.getElementById("qr-sede-colinas"), {
+        text: QR_URLS.colinas,
+        width: 115,
+        height: 115,
+        colorDark: "#0f172a",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.M
+      });
+
+      // Voucher ticket mini QR
+      new QRCode(document.getElementById("voucher-qr"), {
+        text: "MDQ-ZN-TURNO-CONFIRMADO-CANESA",
+        width: 60,
+        height: 60,
+        colorDark: "#1A365D",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.L
+      });
+    });
+
+    // Flip to QR face and configure for selected option
+    function flipToQr(type) {
+      currentFlipMode = type;
+      const viewRegistro = document.getElementById('flip-view-registro');
+      const viewTurno = document.getElementById('flip-view-turno');
+      const viewGuia = document.getElementById('view-guia');
+
+      if (type === 'registro') {
+        viewRegistro.classList.remove('hidden');
+        viewTurno.classList.add('hidden');
+        // Los pasos NO se muestran al registrarse
+        if (viewGuia) viewGuia.classList.add('hidden');
+      } else {
+        viewRegistro.classList.add('hidden');
+        viewTurno.classList.remove('hidden');
+        // Los pasos SOLO se muestran cuando se da vuelta el QR de pedir turno
+        if (viewGuia) {
+          viewGuia.classList.remove('hidden');
+        }
+      }
+
+      const card = document.getElementById('interactive-flip-card');
+      card.classList.add('is-flipped');
+    }
+
+    // Flip back to options menu
+    function flipBack() {
+      const card = document.getElementById('interactive-flip-card');
+      card.classList.remove('is-flipped');
+      // Ocultar los pasos al volver al menú principal
+      const viewGuia = document.getElementById('view-guia');
+      if (viewGuia) viewGuia.classList.add('hidden');
+    }
+
+    // Update only the QR code displayed on the flipped side
+    function updateFlippedContent(type) {
+      currentFlipMode = type;
+      if (type === 'libertad') {
+        generateFlipQr(QR_URLS.libertad, "#0284C7");
+      } else if (type === 'colinas') {
+        generateFlipQr(QR_URLS.colinas, "#0D9488");
+      } else {
+        // 'turno' o portal directo
+        generateFlipQr(QR_URLS.turno, "#1A365D");
+      }
+    }
+
+    function switchTab(tab) {
+      currentTab = tab;
+      const tabs = ['guia', 'simulador', 'puntos'];
+      
+      tabs.forEach(t => {
+        const view = document.getElementById(`view-${t}`);
+        const btn = document.getElementById(`tab-btn-${t}`);
+        if (t === tab) {
+          view.classList.remove('hidden');
+          btn.className = "px-3.5 py-1.5 rounded-lg font-medium transition-all bg-sky-600 text-white shadow-sm flex items-center gap-1.5";
+        } else {
+          view.classList.add('hidden');
+          btn.className = "px-3.5 py-1.5 rounded-lg font-medium transition-all bg-white/10 text-slate-200 hover:bg-white/20 flex items-center gap-1.5";
+        }
+      });
+    }
+
+    function goToSimStep(stepNumber) {
+      currentSimStep = stepNumber;
+      const totalSteps = 5;
+
+      // Hide all simulation step views
+      for (let i = 1; i <= 5; i++) {
+        const stepEl = document.getElementById(`sim-step-${i}`);
+        if (stepEl) stepEl.classList.add('hidden');
+      }
+      document.getElementById('sim-step-complete').classList.add('hidden');
+
+      const target = document.getElementById(`sim-step-${stepNumber}`);
+      if (target) {
+        target.classList.remove('hidden');
+      }
+
+      // Update progress bar
+      const progressPercent = Math.min(100, Math.round((stepNumber / totalSteps) * 100));
+      document.getElementById('wizard-progress-bar').style.width = `${progressPercent}%`;
+      document.getElementById('wizard-step-label').textContent = `Paso ${stepNumber} de ${totalSteps}`;
+    }
+
+    function selectTrámiteZoonosis() {
+      showToast("Área Zoonosis seleccionada.");
+    }
+
+    function toggleTercero(isTercero) {
+      const fields = document.getElementById('tercero-fields');
+      if (isTercero) {
+        fields.classList.remove('hidden');
+      } else {
+        fields.classList.add('hidden');
+      }
+    }
+
+    function confirmarReservaSimulada() {
+      const consent1 = document.getElementById('check-consentimiento').checked;
+      const consent2 = document.getElementById('check-postoperatorio').checked;
+
+      if (!consent1 || !consent2) {
+        showToast("⚠️ Debe tildar los consentimientos quirúrgicos y postoperatorios obligatorios para reservar.");
+        return;
+      }
+
+      // Populate voucher details
+      const titular = document.getElementById('sim-nombre').value || 'Titular Registrado';
+      const especie = document.getElementById('sim-especie').value;
+      const raza = document.getElementById('sim-raza').value || 'Mestizo';
+      const sedeRadio = document.querySelector('input[name="sim-sede"]:checked');
+      const sede = sedeRadio ? sedeRadio.value : 'Canesa y Guanahani';
+      const slotRadio = document.querySelector('input[name="sim-slot"]:checked');
+      const horario = slotRadio ? slotRadio.value : 'Lunes 08:30 hs';
+
+      document.getElementById('ticket-titular').textContent = titular;
+      document.getElementById('ticket-animal').textContent = `${especie} • ${raza}`;
+      document.getElementById('ticket-sede').textContent = sede;
+      document.getElementById('ticket-horario').textContent = horario;
+      document.getElementById('ticket-codigo').textContent = `ZN-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
+
+      // Hide step 5 and show voucher
+      document.getElementById('sim-step-5').classList.add('hidden');
+      document.getElementById('sim-step-complete').classList.remove('hidden');
+      
+      document.getElementById('wizard-progress-bar').style.width = '100%';
+      document.getElementById('wizard-step-label').textContent = 'Completado';
+
+      showToast("¡Turno reservado exitosamente! Mostrá este comprobante el día de la cita.");
+    }
+
+    function openQrModal(title, url, subtitle) {
+      const modal = document.getElementById('qr-modal');
+      const canvasContainer = document.getElementById('modal-qr-canvas');
+      
+      document.getElementById('modal-qr-title').textContent = title;
+      document.getElementById('modal-qr-subtitle').textContent = subtitle || url;
+      document.getElementById('modal-qr-link').href = url;
+
+      // Clear previous
+      canvasContainer.innerHTML = '';
+
+      // Create new QR
+      modalQrInstance = new QRCode(canvasContainer, {
+        text: url,
+        width: 190,
+        height: 190,
+        colorDark: "#1A365D",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.H
+      });
+
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeQrModal() {
+      const modal = document.getElementById('qr-modal');
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    // Close modal on ESC key
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeQrModal();
+    });
+
+    function showToast(message) {
+      const banner = document.getElementById('toast-banner');
+      const text = document.getElementById('toast-message');
+      text.textContent = message;
+      banner.classList.remove('hidden');
+      
+      clearTimeout(window.toastTimer);
+      window.toastTimer = setTimeout(() => {
+        hideToast();
+      }, 5000);
+    }
+
+    function hideToast() {
+      const banner = document.getElementById('toast-banner');
+      banner.classList.add('hidden');
+    }
+  </script>
+</body>
+</html>
