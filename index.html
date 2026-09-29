@@ -215,8 +215,33 @@
                                 </button>
                             </div>
 
-                            <!-- Opción 3: Chatbot WhatsApp -->
+                            <!-- Opción 5: Cronograma Online Quitofabnor Móviles (Movido aquí) -->
                             <div class="mt-4">
+                                <button id="btn-cronograma-quitofabnor" onclick="flipToQr('cronograma')"
+                                    class="group w-full text-left bg-violet-500/10 hover:bg-violet-500/20 border border-violet-400/40 hover:border-violet-400 p-5 rounded-2xl transition flex items-center justify-between shadow-sm">
+                                    <div class="flex items-center gap-4">
+                                        <div
+                                            class="w-11 h-11 rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 text-white flex items-center justify-center text-lg relative">
+                                            <i class="fa-solid fa-calendar-days"></i>
+                                            <span id="cronograma-status-dot"
+                                                class="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full border-2 border-[#1B2559] bg-slate-400 transition-colors duration-500"
+                                                title="Verificando estado..."></span>
+                                        </div>
+                                        <div>
+                                            <span class="text-xs text-slate-300">Girá para ver el cronograma</span>
+                                            <span
+                                                class="text-[15px] font-bold text-white group-hover:text-violet-300 block mb-0.5">Cronograma
+                                                Online
+                                                Quirófanos Móviles</span>
+                                        </div>
+                                    </div>
+                                    <i
+                                        class="fa-solid fa-rotate text-violet-400 group-hover:rotate-180 transition-transform duration-500 text-base ml-2"></i>
+                                </button>
+                            </div>
+
+                            <!-- Opción 3: Chatbot WhatsApp -->
+                            <div class="mt-3">
                                 <a href="https://wa.me/5492235280718?text=hola" target="_blank"
                                     onclick="window.open('https://wa.me/5492235280718?text=hola', '_blank'); return false;"
                                     class="group w-full text-left bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-400/40 hover:border-emerald-400 p-4 rounded-2xl transition flex items-center justify-between shadow-sm cursor-pointer">
@@ -382,6 +407,47 @@
                             class="mt-4 px-6 py-2.5 bg-white/10 hover:bg-white/20 border border-white/20 text-white rounded-xl text-sm font-semibold transition flex items-center justify-center gap-2 shadow-sm w-full max-w-sm">
                             <i class="fa-solid fa-list-ol text-pink-300"></i> Ver Guía rápida y Requisitos
                         </button>
+                    </div>
+
+                    <!-- VISTA 3: CRONOGRAMA QUITOFABNOR MÓVILES -->
+                    <div id="flip-view-cronograma" class="hidden w-full flex flex-col items-center">
+
+                        <!-- Header con estado -->
+                        <div class="w-full flex items-center justify-between mb-3">
+                            <span
+                                class="text-xs font-bold uppercase tracking-wider text-violet-300 bg-violet-500/20 px-2.5 py-1 rounded-lg border border-violet-400/30">
+                                <i class="fa-solid fa-calendar-days mr-1"></i>Quirófano Móvil · Barrios
+                            </span>
+                            <div class="flex items-center gap-1.5">
+                                <span id="cronograma-flip-dot"
+                                    class="w-3 h-3 rounded-full bg-slate-400 animate-pulse shrink-0"></span>
+                                <span id="cronograma-flip-status" class="text-[10px] text-slate-300">Cargando…</span>
+                            </div>
+                        </div>
+
+                        <!-- Spinner de carga -->
+                        <div id="cronograma-loading"
+                            class="w-full flex flex-col items-center justify-center gap-2 py-6">
+                            <div
+                                class="w-9 h-9 rounded-full border-4 border-violet-400/30 border-t-violet-400 animate-spin">
+                            </div>
+                            <p class="text-xs text-slate-400">Obteniendo cronograma…</p>
+                        </div>
+
+                        <!-- Contenedor del cronograma dinámico -->
+                        <div id="cronograma-contenido"
+                            class="hidden w-full space-y-2 max-h-72 overflow-y-auto custom-scrollbar pr-1"></div>
+
+                        <!-- Actualizado -->
+                        <div id="cronograma-actualizado" class="hidden flex flex-col items-center mt-3 border-t border-white/5 pt-2">
+                            <p class="text-[10px] text-slate-500 text-center">
+                                <i class="fa-solid fa-database mr-1"></i>Fuente: <a href="https://www.mardelplata.gob.ar/quirofanobarriosweb" target="_blank" class="hover:text-slate-300 underline underline-offset-2">mardelplata.gob.ar</a>
+                            </p>
+                            <p class="text-[9px] text-slate-600 text-center mt-0.5">
+                                <i class="fa-regular fa-clock mr-1"></i><span id="cronograma-fecha-act"></span>
+                            </p>
+                        </div>
+
                     </div>
 
                     <!-- Botón inferior para volver al menú, visible en ambas vistas -->
@@ -1732,18 +1798,25 @@
             currentFlipMode = type;
             const viewRegistro = document.getElementById('flip-view-registro');
             const viewTurno = document.getElementById('flip-view-turno');
+            const viewCronograma = document.getElementById('flip-view-cronograma');
             const viewGuia = document.getElementById('view-guia');
+
+            // Ocultar todas las vistas traseras
+            viewRegistro.classList.add('hidden');
+            viewTurno.classList.add('hidden');
+            if (viewCronograma) viewCronograma.classList.add('hidden');
+            if (viewGuia) viewGuia.classList.add('hidden');
 
             if (type === 'registro') {
                 viewRegistro.classList.remove('hidden');
-                viewTurno.classList.add('hidden');
-                if (viewGuia) viewGuia.classList.add('hidden');
+            } else if (type === 'cronograma') {
+                if (viewCronograma) {
+                    viewCronograma.classList.remove('hidden');
+                    sincronizarEstadoCronogramaFlip();
+                    cargarCronogramaEnVista();
+                }
             } else {
-                viewRegistro.classList.add('hidden');
                 viewTurno.classList.remove('hidden');
-                // La guía ya no se muestra automáticamente aquí,
-                // se mostrará solo al presionar el botón de la guía.
-                if (viewGuia) viewGuia.classList.add('hidden');
             }
 
             const card = document.getElementById('interactive-flip-card');
@@ -1935,6 +2008,188 @@
             const banner = document.getElementById('toast-banner');
             banner.classList.add('hidden');
         }
+
+        // ─── Cronograma Quirófano Móvil · Quitofabnor ─────────────────────────
+        const ZOOBASE_API_URL = 'https://script.google.com/macros/s/AKfycbwqCG0BPvAADYtAIDPaV8la_R_W2jDZpUq61iVL7ZYIW_Ltg3hi-gXZ39bc7PWiuAhW8w/exec';
+
+        let _cronogramaOnline = null;
+        let _cronogramaData = null;   // JSON completo cacheado
+
+        // ── Verificación del estado + carga de datos ──────────────────────────
+        async function verificarEstadoCronograma() {
+            const dot = document.getElementById('cronograma-status-dot');
+            if (dot) {
+                dot.className = 'absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full border-2 border-[#1B2559] bg-slate-400 animate-pulse transition-colors duration-500';
+                dot.title = 'Verificando estado…';
+            }
+
+            try {
+                const resp = await fetch(ZOOBASE_API_URL, { method: 'GET', mode: 'cors' });
+                if (!resp.ok) throw new Error('HTTP ' + resp.status);
+                const data = await resp.json().catch(() => null);
+                _cronogramaOnline = data && data.status === 'success';
+                _cronogramaData = data;
+            } catch (e) {
+                _cronogramaOnline = false;
+                _cronogramaData = null;
+            }
+
+            if (dot) {
+                dot.className = `absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full border-2 border-[#1B2559] ${_cronogramaOnline ? 'bg-emerald-400' : 'bg-red-500'} transition-colors duration-500`;
+                dot.title = _cronogramaOnline ? 'Sistema en línea' : 'Sin conexión';
+            }
+            sincronizarEstadoCronogramaFlip();
+        }
+
+        // ── Indicador compacto en la cara trasera ─────────────────────────────
+        function sincronizarEstadoCronogramaFlip() {
+            const flipDot = document.getElementById('cronograma-flip-dot');
+            const flipStatus = document.getElementById('cronograma-flip-status');
+            if (!flipDot || !flipStatus) return;
+            if (_cronogramaOnline === null) {
+                flipDot.className = 'w-3 h-3 rounded-full bg-slate-400 animate-pulse shrink-0';
+                flipStatus.textContent = 'Verificando…';
+            } else if (_cronogramaOnline) {
+                flipDot.className = 'w-3 h-3 rounded-full bg-emerald-400 shrink-0';
+                flipStatus.textContent = 'En línea';
+            } else {
+                flipDot.className = 'w-3 h-3 rounded-full bg-red-500 shrink-0';
+                flipStatus.textContent = 'Sin conexión';
+            }
+        }
+
+        // ── Cargar y renderizar el cronograma al girar ────────────────────────
+        async function cargarCronogramaEnVista() {
+            const loader = document.getElementById('cronograma-loading');
+            const contenido = document.getElementById('cronograma-contenido');
+            const actEl = document.getElementById('cronograma-actualizado');
+            const fechaEl = document.getElementById('cronograma-fecha-act');
+            if (!contenido) return;
+
+            // Mostrar spinner
+            if (loader) loader.classList.remove('hidden');
+            contenido.classList.add('hidden');
+            contenido.innerHTML = '';
+            if (actEl) actEl.classList.add('hidden');
+
+            // Fetch si no hay datos cacheados aún
+            if (!_cronogramaData) {
+                try {
+                    const resp = await fetch(ZOOBASE_API_URL, { method: 'GET', mode: 'cors' });
+                    const data = await resp.json().catch(() => null);
+                    _cronogramaOnline = data && data.status === 'success';
+                    _cronogramaData = data;
+                    sincronizarEstadoCronogramaFlip();
+                } catch (e) {
+                    _cronogramaOnline = false;
+                }
+            }
+
+            if (loader) loader.classList.add('hidden');
+
+            // Sin datos / error
+            if (!_cronogramaData || !_cronogramaOnline) {
+                contenido.innerHTML = `
+                    <div class="w-full bg-red-500/10 border border-red-400/30 rounded-xl p-4 text-center">
+                        <i class="fa-solid fa-triangle-exclamation text-red-400 text-xl mb-2 block"></i>
+                        <p class="text-sm text-red-200 font-bold">No se pudo obtener el cronograma</p>
+                        <p class="text-[11px] text-slate-400 mt-1">Verificá tu conexión o intentá más tarde.</p>
+                        <a href="https://www.mardelplata.gob.ar/quirofanobarriosweb" target="_blank"
+                            class="inline-flex items-center gap-1.5 mt-3 px-4 py-2 bg-violet-600 hover:bg-violet-500 text-white rounded-xl text-xs font-bold transition">
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i> Ver en sitio oficial
+                        </a>
+                    </div>`;
+                contenido.classList.remove('hidden');
+                return;
+            }
+
+            const crono = _cronogramaData.cronograma;
+
+            // ── Caso: bloques estructurados ───────────────────────────────────
+            if (crono && crono.bloques && crono.bloques.length > 0) {
+                crono.bloques.forEach(bloque => {
+                    const periodoEl = document.createElement('div');
+                    periodoEl.className = 'bg-violet-500/20 border border-violet-400/30 rounded-xl px-3 py-2 mb-1';
+                    periodoEl.innerHTML = `
+                        <p class="text-[11px] font-black text-violet-200 uppercase tracking-wide">
+                            <i class="fa-regular fa-calendar mr-1"></i>${bloque.periodo}
+                        </p>`;
+                    contenido.appendChild(periodoEl);
+
+                    bloque.sedes.forEach(sede => {
+                        const sedeEl = document.createElement('a');
+                        sedeEl.href = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(sede.nombre + ' ' + (sede.detalle||'') + ', Mar del Plata')}&travelmode=transit`;
+                        sedeEl.target = "_blank";
+                        sedeEl.className = 'block bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 mb-1 hover:bg-white/10 transition group cursor-pointer text-left focus:outline-none focus:ring-2 focus:ring-violet-400';
+                        sedeEl.innerHTML = `
+                            <div class="flex items-start gap-2.5">
+                                <i class="fa-solid fa-location-dot text-violet-400 text-sm mt-0.5 shrink-0"></i>
+                                <div class="flex-1">
+                                    <p class="text-xs font-bold text-white leading-tight">${sede.nombre}</p>
+                                    ${sede.detalle ? `<p class="text-[11px] text-slate-400 mt-0.5">${sede.detalle}</p>` : ''}
+                                </div>
+                            </div>
+                            <div class="mt-2 pt-2 border-t border-white/5 flex items-center justify-between text-violet-300 group-hover:text-violet-200 transition-colors">
+                                <span class="text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5">
+                                    <i class="fa-solid fa-bus text-yellow-400 text-xs"></i> Cómo llegar en colectivo
+                                </span>
+                                <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                            </div>`;
+                        contenido.appendChild(sedeEl);
+                    });
+                });
+
+            // ── Caso: texto plano ─────────────────────────────────────────────
+            } else if (crono && crono.textoPlano) {
+                const lineas = crono.textoPlano
+                    .split(/[\n\r]+|(?=-[A-Z])/)
+                    .map(l => l.replace(/^-/, '').trim())
+                    .filter(l => l.length > 4);
+
+                lineas.forEach(linea => {
+                    const esTitulo = /^CRONOGRAMA/i.test(linea);
+                    if (esTitulo) {
+                        const el = document.createElement('div');
+                        el.className = 'bg-violet-500/20 border border-violet-400/30 rounded-xl px-3 py-2 mb-1 mt-2 first:mt-0';
+                        el.innerHTML = `<p class="text-[11px] font-black text-violet-200 uppercase">${linea}</p>`;
+                        contenido.appendChild(el);
+                    } else {
+                        const el = document.createElement('a');
+                        el.href = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(linea + ', Mar del Plata')}&travelmode=transit`;
+                        el.target = "_blank";
+                        el.className = 'block bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 mb-1 hover:bg-white/10 transition group cursor-pointer text-left focus:outline-none focus:ring-2 focus:ring-violet-400';
+                        el.innerHTML = `
+                            <div class="flex items-start gap-2.5">
+                                <i class="fa-solid fa-location-dot text-violet-400 text-sm mt-0.5 shrink-0"></i>
+                                <div class="flex-1">
+                                    <p class="text-[11px] font-bold text-slate-200">${linea}</p>
+                                </div>
+                            </div>
+                            <div class="mt-2 pt-2 border-t border-white/5 flex items-center justify-between text-violet-300 group-hover:text-violet-200 transition-colors">
+                                <span class="text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5">
+                                    <i class="fa-solid fa-bus text-yellow-400 text-xs"></i> Cómo llegar en colectivo
+                                </span>
+                                <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                            </div>`;
+                        contenido.appendChild(el);
+                    }
+                });
+            }
+
+            contenido.classList.remove('hidden');
+
+            // Fecha de actualización
+            if (actEl && fechaEl && _cronogramaData.actualizadoEn) {
+                fechaEl.textContent = 'Actualizado: ' + _cronogramaData.actualizadoEn;
+                actEl.classList.remove('hidden');
+            }
+        }
+
+        // Verificar al cargar y cada 2 minutos
+        document.addEventListener('DOMContentLoaded', () => {
+            verificarEstadoCronograma();
+            setInterval(verificarEstadoCronograma, 120000);
+        });
     </script>
 </body>
 
