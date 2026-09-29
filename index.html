@@ -179,7 +179,7 @@
                                     class="group text-left bg-white/5 hover:bg-white/10 border border-pink-400/40 hover:border-pink-400 p-5 rounded-2xl transition flex items-center justify-between shadow-sm">
                                     <div class="flex items-center gap-4">
                                         <div
-                                            class="w-11 h-11 rounded-xl bg-[#E11D48]/30 text-pink-300 flex items-center justify-center text-lg">
+                                            class="w-11 h-11 rounded-lg bg-pink-600 text-white flex items-center justify-center text-xl shadow-md">
                                             <i class="fa-solid fa-calendar-check"></i>
                                         </div>
                                         <div>
@@ -198,7 +198,7 @@
                                     class="group text-left bg-white/5 hover:bg-white/10 border border-sky-400/40 hover:border-sky-300 p-5 rounded-2xl transition flex items-center justify-between shadow-sm">
                                     <div class="flex items-center gap-4">
                                         <div
-                                            class="w-11 h-11 rounded-xl bg-sky-500/30 text-sky-300 flex items-center justify-center text-lg">
+                                            class="w-11 h-11 rounded-lg bg-sky-600 text-white flex items-center justify-center text-xl shadow-md">
                                             <i class="fa-solid fa-location-dot"></i>
                                         </div>
                                         <div>
@@ -221,7 +221,7 @@
                                     class="group w-full text-left bg-violet-500/10 hover:bg-violet-500/20 border border-violet-400/40 hover:border-violet-400 p-5 rounded-2xl transition flex items-center justify-between shadow-sm">
                                     <div class="flex items-center gap-4">
                                         <div
-                                            class="w-11 h-11 rounded-xl bg-gradient-to-br from-violet-600 to-indigo-600 text-white flex items-center justify-center text-lg relative">
+                                            class="w-11 h-11 rounded-lg bg-gradient-to-br from-violet-600 to-indigo-600 text-white flex items-center justify-center text-xl relative shadow-md">
                                             <i class="fa-solid fa-calendar-days"></i>
                                             <span id="cronograma-status-dot"
                                                 class="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full border-2 border-[#1B2559] bg-slate-400 transition-colors duration-500"
@@ -240,48 +240,38 @@
                                 </button>
                             </div>
 
-                            <!-- Opción 3: Chatbot WhatsApp -->
-                            <div class="mt-3">
+                            <!-- Opciones WhatsApp: Chatbot y Mesa de Ayuda (Lado a lado, cuadrados) -->
+                            <div class="grid grid-cols-2 gap-3 mt-4">
+                                <!-- Opción 3: Chatbot WhatsApp -->
                                 <a href="https://wa.me/5492235280718?text=hola" target="_blank"
                                     onclick="window.open('https://wa.me/5492235280718?text=hola', '_blank'); return false;"
-                                    class="group w-full text-left bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-400/40 hover:border-emerald-400 p-4 rounded-2xl transition flex items-center justify-between shadow-sm cursor-pointer">
-                                    <div class="flex items-center gap-4">
-                                        <div
-                                            class="w-11 h-11 rounded-xl bg-emerald-500 text-white flex items-center justify-center text-xl shadow-md">
-                                            <i class="fa-solid fa-robot"></i>
-                                        </div>
-                                        <div>
-                                            <span
-                                                class="text-[15px] font-bold text-emerald-100 group-hover:text-white block mb-0.5">Otras
-                                                Gestiones Chatbot Zoonosis 24hs</span>
-                                            <span class="text-xs text-emerald-200/70">Hablá con nuestro asistente
-                                                virtual</span>
-                                        </div>
+                                    class="group relative flex flex-col items-center justify-center text-center bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-400/30 hover:border-emerald-400 p-5 rounded-2xl transition shadow-sm cursor-pointer overflow-hidden animate-pulse hover:animate-none">
+                                    <div
+                                        class="absolute inset-0 bg-gradient-to-br from-emerald-400/10 to-transparent opacity-0 group-hover:opacity-100 transition duration-300">
                                     </div>
-                                    <i
-                                        class="fa-solid fa-arrow-up-right-from-square text-emerald-400 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-transform duration-300 text-base ml-2"></i>
+                                    <div
+                                        class="w-12 h-12 rounded-lg bg-emerald-500 text-white flex items-center justify-center text-2xl shadow-md mb-3 transform group-hover:scale-110 transition duration-300">
+                                        <i class="fa-solid fa-robot"></i>
+                                    </div>
+                                    <span
+                                        class="text-[13px] font-bold text-emerald-100 group-hover:text-white leading-tight mb-1 relative z-10">Chatbot
+                                        Zoonosis</span>
+                                    <span class="text-[10px] text-emerald-200/60 font-medium relative z-10">Asistente
+                                        virtual 24hs</span>
                                 </a>
-                            </div>
 
-                            <!-- Opción 4: Mesa de Ayuda MDP WhatsApp -->
-                            <div class="mt-3">
+                                <!-- Opción 4: Mesa de Ayuda MDP WhatsApp -->
                                 <a href="https://wa.me/5492233452651" target="_blank"
                                     onclick="window.open('https://wa.me/5492233452651', '_blank'); return false;"
-                                    class="group w-full text-left bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-400/40 hover:border-emerald-400 p-4 rounded-2xl transition flex items-center justify-between shadow-sm cursor-pointer">
-                                    <div class="flex items-center gap-4">
-                                        <div
-                                            class="w-11 h-11 rounded-xl bg-emerald-600 text-white flex items-center justify-center text-xl shadow-md">
-                                            <i class="fa-brands fa-whatsapp"></i>
-                                        </div>
-                                        <div>
-                                            <span
-                                                class="text-[15px] font-bold text-emerald-100 group-hover:text-white block mb-0.5">Mesa
-                                                de Ayuda MDP</span>
-                                            <span class="text-xs text-emerald-200/70">WhatsApp: 223 345-2651</span>
-                                        </div>
+                                    class="group flex flex-col items-center justify-center text-center bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-400/30 hover:border-emerald-400/60 p-5 rounded-2xl transition shadow-sm cursor-pointer">
+                                    <div
+                                        class="w-10 h-10 rounded-lg bg-emerald-700/80 text-white flex items-center justify-center text-xl shadow-sm mb-3 transform group-hover:scale-105 transition duration-300">
+                                        <i class="fa-brands fa-whatsapp"></i>
                                     </div>
-                                    <i
-                                        class="fa-solid fa-arrow-up-right-from-square text-emerald-400 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-transform duration-300 text-base ml-2"></i>
+                                    <span
+                                        class="text-[13px] font-bold text-emerald-100 group-hover:text-white leading-tight mb-1">Mesa
+                                        de Ayuda MGP</span>
+                                    <span class="text-[10px] text-emerald-200/60">WhatsApp: 223 345-2651</span>
                                 </a>
                             </div>
 
@@ -439,9 +429,12 @@
                             class="hidden w-full space-y-2 max-h-[420px] overflow-y-auto custom-scrollbar pr-1"></div>
 
                         <!-- Actualizado -->
-                        <div id="cronograma-actualizado" class="hidden flex flex-col items-center mt-3 border-t border-white/5 pt-2">
+                        <div id="cronograma-actualizado"
+                            class="hidden flex flex-col items-center mt-3 border-t border-white/5 pt-2">
                             <p class="text-[10px] text-slate-500 text-center">
-                                <i class="fa-solid fa-database mr-1"></i>Fuente: <a href="https://www.mardelplata.gob.ar/quirofanobarriosweb" target="_blank" class="hover:text-slate-300 underline underline-offset-2">mardelplata.gob.ar</a>
+                                <i class="fa-solid fa-database mr-1"></i>Fuente: <a
+                                    href="https://www.mardelplata.gob.ar/quirofanobarriosweb" target="_blank"
+                                    class="hover:text-slate-300 underline underline-offset-2">mardelplata.gob.ar</a>
                             </p>
                             <p class="text-[9px] text-slate-600 text-center mt-0.5">
                                 <i class="fa-regular fa-clock mr-1"></i><span id="cronograma-fecha-act"></span>
@@ -2123,7 +2116,7 @@
 
                     bloque.sedes.forEach(sede => {
                         const sedeEl = document.createElement('a');
-                        sedeEl.href = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(sede.nombre + ' ' + (sede.detalle||'') + ', Mar del Plata')}&travelmode=transit`;
+                        sedeEl.href = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(sede.nombre + ' ' + (sede.detalle || '') + ', Mar del Plata')}&travelmode=transit`;
                         sedeEl.target = "_blank";
                         sedeEl.className = 'block bg-white/5 border border-white/10 rounded-xl px-3 py-2.5 mb-1 hover:bg-white/10 transition group cursor-pointer text-left focus:outline-none focus:ring-2 focus:ring-violet-400';
                         sedeEl.innerHTML = `
@@ -2144,7 +2137,7 @@
                     });
                 });
 
-            // ── Caso: texto plano ─────────────────────────────────────────────
+                // ── Caso: texto plano ─────────────────────────────────────────────
             } else if (crono && crono.textoPlano) {
                 const lineas = crono.textoPlano
                     .split(/[\n\r]+|(?=-[A-Z])/)
